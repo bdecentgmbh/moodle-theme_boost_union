@@ -1383,8 +1383,8 @@ body.theme_boost-union-footerbuttonnone.jsenabled {
                             }
                             /* The positions of the dropdown menu added */
                             .dropdown-menu {
-                                left: auto;
-                                right: 0;
+                                /* left: auto;
+                                right: 0; */
                                 li {
                                     width: 100%;
                                 }
@@ -2634,4 +2634,35 @@ body.dir-rtl {
             max-width: 100%;
         }
     }
+}
+
+// Add icon for the submenu.
+.navbar.fixed-top .boost-union-moremenu.dropdown-menu .dropdown-item.carousel-navigation-link::after {
+    content: "\f0da";
+    font-family: var(--fa-style-family, "Font Awesome 6 Free", fontawesome);
+    font-weight: var(--fa-style, 900);
+    font-size: 1rem;
+    right: 0.75rem;
+    position: absolute;
+}
+
+// Prevent the carousel navigation link child elements pointer events.
+.navbar.fixed-top .boost-union-moremenu.dropdown-menu .carousel-navigation-link>* {
+    pointer-events: none;
+}
+.navbar.fixed-top .boost-union-moremenu.dropdown-menu .carousel-navigation-link>* img {
+    margin: 0;
+}
+
+// Allign the carousel naviagtion link arrow icon and put some padding.
+.navbar.fixed-top .usermenu .dropdown-menu .submenu .header,
+.navbar.fixed-top .boost-union-moremenu.dropdown-menu .submenu .header {
+    padding: 0.25rem 0.75rem;
+    font-size: .975rem;
+    display: flex;
+    align-items: center;
+}
+
+.navbar.fixed-top .boost-union-moremenu.dropdown-menu {
+    min-width: 235px;
 }
