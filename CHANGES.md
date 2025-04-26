@@ -6,6 +6,7 @@ Changes
 
 ### Unreleased
 
+* 2025-04-26 - Bugfix: Make sure that smart menu 3rd level does not get horizontal scroll bars, resolves #807.
 * 2025-04-24 - Bugfix: Make sure that the navbar highlight is not shown in the dark navbar, resolves #908.
 * 2025-04-22 - Bugfix: Support multilang course category names in stickyheaders, resolves #905.
 
