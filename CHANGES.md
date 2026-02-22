@@ -6,6 +6,7 @@ Changes
 
 ### Unreleased
 
+* 2026-02-22 - Bugfix: Smart Menu sometimes repeats menus, resolves #800
 * 2026-02-12 - SCSS snippet: Aligned course section borders, resolves #1132
 
 ### v4.5-r32
