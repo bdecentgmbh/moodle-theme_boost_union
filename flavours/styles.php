@@ -108,7 +108,12 @@ if (file_exists("$CFG->dirroot/theme/$themename/config.php")) {
 }
 
 $candidatedir = "$CFG->localcachedir/theme/$rev/$themename/css";
-$candidatesheet = "{$candidatedir}/" . theme_boost_union_flavour_styles_get_filename($type, $themesubrev, $flavourid, $usesvg);
+$candidatesheet = "{$candidatedir}/" . theme_boost_union_flavour_styles_get_filename(
+    $type,
+    $themesubrev,
+    $flavourid,
+    $usesvg
+);
 $etag = theme_styles_get_etag($themename, $rev, $type, $themesubrev, $usesvg);
 
 if (file_exists($candidatesheet)) {
@@ -146,7 +151,12 @@ if ($themerev <= 0 || $themerev != $rev || $themesubrev != $currentthemesubrev) 
     $cache = false;
 
     $candidatedir = "$CFG->localcachedir/theme/$rev/$themename/css";
-    $candidatesheet = "{$candidatedir}/" . theme_boost_union_flavour_styles_get_filename($type, $themesubrev, $flavourid, $usesvg);
+    $candidatesheet = "{$candidatedir}/" . theme_boost_union_flavour_styles_get_filename(
+        $type,
+        $themesubrev,
+        $flavourid,
+        $usesvg
+    );
     $etag = theme_styles_get_etag($themename, $rev, $type, $themesubrev, $usesvg);
 }
 
@@ -163,7 +173,10 @@ if ($type === 'editor' || $type === 'editor-rtl') {
     }
 }
 
-if (($fallbacksheet = theme_styles_fallback_content($theme)) && !$theme->has_css_cached_content()) {
+if (
+    ($fallbacksheet = theme_boost_union_flavour_styles_fallback_content($theme, $flavourid)) &&
+    !$theme->has_css_cached_content()
+) {
     // The theme is not yet available and a fallback is available.
     // Return the fallback immediately, specifying the Content-Length, then generate in the background.
     $css = file_get_contents($fallbacksheet);
@@ -194,7 +207,13 @@ if ($sendaftergeneration || $lock) {
 
     // The content does not exist locally.
     // Generate and save it.
-    $candidatesheet = theme_boost_union_flavour_styles_generate_and_store($theme, $rev, $themesubrev, $candidatedir, $flavourid);
+    $candidatesheet = theme_boost_union_flavour_styles_generate_and_store(
+        $theme,
+        $rev,
+        $themesubrev,
+        $candidatedir,
+        $flavourid
+    );
 
     if ($lock) {
         $lock->release();
@@ -222,7 +241,13 @@ if ($sendaftergeneration || $lock) {
  * @param   int             $flavourid The flavour ID
  * @return  string          The path that the primary CSS was written to
  */
-function theme_boost_union_flavour_styles_generate_and_store($theme, $rev, $themesubrev, $candidatedir, $flavourid) {
+function theme_boost_union_flavour_styles_generate_and_store(
+    $theme,
+    $rev,
+    $themesubrev,
+    $candidatedir,
+    $flavourid
+) {
     global $CFG;
     require_once("{$CFG->libdir}/filelib.php");
 
@@ -253,7 +278,12 @@ function theme_boost_union_flavour_styles_generate_and_store($theme, $rev, $them
     // This file is used as a fallback when waiting for a theme to compile and is not versioned in any way.
     $fallbacksheet = make_temp_directory("theme/{$theme->name}")
         . "/"
-        . theme_boost_union_flavour_styles_get_filename($type, $themesubrev, $flavourid, $theme->use_svg_icons());
+        . theme_boost_union_flavour_styles_get_filename(
+            $type,
+            0,
+            $flavourid,
+            $theme->use_svg_icons()
+        );
     css_store_css($theme, $fallbacksheet, $csscontent);
 
     // Delete older revisions from localcache.
@@ -285,9 +315,10 @@ function theme_boost_union_flavour_styles_generate_and_store($theme, $rev, $them
  * Fetch the preferred fallback content location if available.
  *
  * @param   theme_config    $theme The theme to be generated
+ * @param   int             $flavourid The flavour ID
  * @return  string          The path to the fallback sheet on disk
  */
-function theme_styles_fallback_content($theme) {
+function theme_boost_union_flavour_styles_fallback_content($theme, $flavourid) {
     global $CFG;
 
     if (!$theme->usefallback) {
@@ -296,7 +327,7 @@ function theme_styles_fallback_content($theme) {
     }
 
     $type = $theme->get_rtl_mode() ? 'all-rtl' : 'all';
-    $filename = theme_boost_union_flavour_styles_get_filename($type);
+    $filename = theme_boost_union_flavour_styles_get_filename($type, 0, $flavourid);
 
     $fallbacksheet = "{$CFG->tempdir}/theme/{$theme->name}/{$filename}";
     if (file_exists($fallbacksheet)) {
@@ -315,7 +346,12 @@ function theme_styles_fallback_content($theme) {
  * @param   bool    $usesvg Whether SVGs are allowed
  * @return  string  The filename for this sheet
  */
-function theme_boost_union_flavour_styles_get_filename($type, $themesubrev = 0, $flavourid = 0, $usesvg = true) {
+function theme_boost_union_flavour_styles_get_filename(
+    $type,
+    $themesubrev = 0,
+    $flavourid = 0,
+    $usesvg = true
+) {
     $filename = $type;
     $filename .= ($themesubrev > 0) ? "_{$themesubrev}" : '';
     $filename .= ($flavourid > 0) ? "_{$flavourid}" : '';

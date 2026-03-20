@@ -2096,6 +2096,19 @@ function theme_boost_union_get_scss_navbar($theme, $flavourid = null) {
 
     // Set styles based on the navbartint setting (only effective for colored navbar variants).
     $navbarcolorsetting = get_config('theme_boost_union', 'navbarcolor');
+
+    // If we are on Moodle Workplace.
+    if (\theme_boost_union\local\mwp::extension_present() == true) {
+        // Call the BU MWP class method only if the class and method exist.
+        if (
+            class_exists('\\local_boost_union_mwp\\local\\branding') &&
+                method_exists('\\local_boost_union_mwp\\local\\branding', 'get_overridden_navbarcolor')
+        ) {
+            // Get the potentially branding-overridden value for navbarcolor.
+            $navbarcolorsetting = \local_boost_union_mwp\local\branding::get_overridden_navbarcolor($navbarcolorsetting);
+        }
+    }
+
     // If a flavour applies.
     if ($flavourid != null) {
         $navbarcolorflavour = theme_boost_union_get_flavour_config_item_for_flavourid($flavourid, 'look_navbarcolor');
@@ -2109,6 +2122,18 @@ function theme_boost_union_get_scss_navbar($theme, $flavourid = null) {
     ) {
         // Resolve the effective tint: flavour overrides global setting.
         $navbartintsetting = get_config('theme_boost_union', 'navbartint');
+        // If we are on Moodle Workplace.
+        if (\theme_boost_union\local\mwp::extension_present() == true) {
+            // Call the BU MWP class method only if the class and method exist.
+            if (
+                class_exists('\\local_boost_union_mwp\\local\\branding') &&
+                    method_exists('\\local_boost_union_mwp\\local\\branding', 'get_overridden_navbartint')
+            ) {
+                // Get the potentially branding-overridden value for navbartint.
+                $navbartintsetting = \local_boost_union_mwp\local\branding::get_overridden_navbartint($navbartintsetting);
+            }
+        }
+
         // If a flavour applies.
         if ($flavourid != null) {
             $navbartintflavour = theme_boost_union_get_flavour_config_item_for_flavourid($flavourid, 'look_navbartint');
@@ -3029,4 +3054,51 @@ function theme_boost_union_build_fa_icon_map() {
 
     // Return icon map.
     return $iconmap;
+}
+
+/**
+ * Helper function to build a notification about possible setting overrides.
+ *
+ * @param bool $mwp If yes, the notification will make clear that the setting override is relevant for Moodle Workplace as well.
+ *                  If no, the notification will make clear that the setting override is relevant for Moodle LMS only.
+ * @param bool $supplement If yes, the 'supplement' version of the string is used instead of the 'override' version.
+ * @return string The HTML for the notification.
+ */
+function theme_boost_union_render_render_setting_override_notification($mwp = false, $supplement = false) {
+    global $OUTPUT;
+
+    // If we are on Moodle Workplace and if the setting is relevant for Moodle Workplace.
+    if (\theme_boost_union\local\mwp::extension_present() == true && $mwp == true) {
+        // Define the URLs for the notification.
+        $mwpurl = new \core\url('/admin/tool/tenant/index.php');
+        $lmsurl = new \core\url('/theme/boost_union/flavours/overview.php');
+        $urls = ['mwpurl' => $mwpurl, 'lmsurl' => $lmsurl];
+
+        // Pick the Moodle Workplace specific string.
+        if ($supplement) {
+            $langstring = get_string('settingsupplementmwp', 'theme_boost_union', $urls, true);
+        } else {
+            $langstring = get_string('settingoverridemwp', 'theme_boost_union', $urls, true);
+        }
+
+        // Otherwise.
+    } else {
+        // Define the URLs for the notification.
+        $lmsurl = new \core\url('/theme/boost_union/flavours/overview.php');
+        $urls = ['lmsurl' => $lmsurl];
+
+        // Pick the string for Moodle LMS.
+        if ($supplement) {
+            $langstring = get_string('settingsupplementlms', 'theme_boost_union', $urls, true);
+        } else {
+            $langstring = get_string('settingoverridelms', 'theme_boost_union', $urls, true);
+        }
+    }
+
+    // Build the notification.
+    $notification = new \core\output\notification($langstring, \core\output\notification::NOTIFY_INFO);
+    $notification->set_show_closebutton(false);
+
+    // Render and return it.
+    return $OUTPUT->render($notification);
 }

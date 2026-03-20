@@ -6,6 +6,8 @@ Changes
 
 ### Unreleased
 
+* 2026-04-11 - Glitch: Fix an inconsistency with the fallback CSS sheet for flavours
+* 2026-04-11 - Workplace: Add support for a Moodle Workplace Extension for Boost Union, resolves #409
 * 2026-04-08 - Improvement: Tweak the edit button colors so that it better fits onto tinted navbars.
 * 2026-04-08 - Improvement: Add dedicated color picker for setting the navbar color, resolves #1224
 * 2026-04-08 - Improvement: Filter additionalhtmlfooter as does Moodle core from Moodle 5.2 on (MDL-88210 / MDL-85498), resolves #847

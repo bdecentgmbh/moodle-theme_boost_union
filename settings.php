@@ -201,6 +201,19 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
             }
         }
 
+        // If we are on Moodle Workplace.
+        if (\theme_boost_union\local\mwp::extension_present() == true) {
+            // Create external pages again to make it show in the Moodle Workplace settings tree as well as
+            // Moodle Workplace does not recognize the external page for some reason.
+            $overviewpage = new admin_externalpage(
+                'theme_boost_union_overview',
+                get_string('settingsoverview', 'theme_boost_union', null, true),
+                new core\url('/theme/boost_union/settings_overview.php'),
+                'theme/boost_union:configure'
+            );
+            $ADMIN->add('theme_boost_union', $overviewpage);
+        }
+
         // Create Look settings page with tabs and tertiary navigation
         // (and allow users with the theme/boost_union:configure capability to access it).
         $page = new admin_settingspage_tabs_with_tertiary(
@@ -209,27 +222,32 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
             'theme/boost_union:configure'
         );
 
-        // Tab: General settings.
-        $tab = new admin_settingpage('theme_boost_union_look_general', get_string('generalsettings', 'theme_boost', null, true));
-
-        // Heading: Theme presets.
-        $name = 'theme_boost_union/presetheading';
-        $preseturl = new core\url('/admin/settings.php', ['section' => 'themesettingboost'], 'theme_boost_general');
-        $title = get_string('presetheading', 'theme_boost_union', null, true);
-        $description = get_string('presetheading_desc', 'theme_boost_union', null, true) . '<br />' .
-            // We would love to use $OUTPUT->single_button($preseturl, ...) here, but this results in the fact
-            // that the settings page redirects to the Boost Core settings after saving for an unknown reason.
-            \core\output\html_writer::link(
-                $preseturl,
-                get_string('presetbutton', 'theme_boost_union', null, true),
-                ['class' => 'btn btn-secondary my-3']
+        // If we are not on Moodle Workplace.
+        if (\theme_boost_union\local\mwp::extension_present() != true) {
+            // Tab: General settings.
+            $tab = new admin_settingpage(
+                'theme_boost_union_look_general',
+                get_string('generalsettings', 'theme_boost', null, true)
             );
-        $setting = new admin_setting_heading($name, $title, $description);
-        $tab->add($setting);
 
-        // Add tab to settings page.
-        $page->add($tab);
+            // Heading: Theme presets.
+            $name = 'theme_boost_union/presetheading';
+            $preseturl = new core\url('/admin/settings.php', ['section' => 'themesettingboost'], 'theme_boost_general');
+            $title = get_string('presetheading', 'theme_boost_union', null, true);
+            $description = get_string('presetheading_desc', 'theme_boost_union', null, true) . '<br />' .
+                // We would love to use $OUTPUT->single_button($preseturl, ...) here, but this results in the fact
+                // that the settings page redirects to the Boost Core settings after saving for an unknown reason.
+                \core\output\html_writer::link(
+                    $preseturl,
+                    get_string('presetbutton', 'theme_boost_union', null, true),
+                    ['class' => 'btn btn-secondary my-3']
+                );
+            $setting = new admin_setting_heading($name, $title, $description);
+            $tab->add($setting);
 
+            // Add tab to settings page.
+            $page->add($tab);
+        }
 
         // Tab: SCSS.
         $tab = new admin_settingpage('theme_boost_union_look_scss', get_string('scsstab', 'theme_boost_union', null, true));
@@ -1935,7 +1953,21 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         // Heading: Course listing.
         $name = 'theme_boost_union/courselistingheading';
         $title = get_string('courselistingheading', 'theme_boost_union', null, true);
-        $setting = new admin_setting_heading($name, $title, null);
+        $description = '';
+        // If we are on Moodle Workplace.
+        if (\theme_boost_union\local\mwp::extension_present() == true) {
+            // Call the BU MWP class method only if the class and method exist.
+            if (
+                class_exists('\\local_boost_union_mwp\\local\\settings') &&
+                    method_exists('\\local_boost_union_mwp\\local\\settings', 'get_ineffective_setting_notification')
+            ) {
+                // Enhance the description for Workplace sites.
+                $description = \local_boost_union_mwp\local\settings::get_ineffective_setting_notification(
+                    'courselistingheading'
+                );
+            }
+        }
+        $setting = new admin_setting_heading($name, $title, $description);
         $tab->add($setting);
 
         // Setting: Course listing presentation.
@@ -2220,7 +2252,21 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         // Heading: Category listing.
         $name = 'theme_boost_union/categorylistingheading';
         $title = get_string('categorylistingheading', 'theme_boost_union', null, true);
-        $setting = new admin_setting_heading($name, $title, null);
+        $description = '';
+        // If we are on Moodle Workplace.
+        if (\theme_boost_union\local\mwp::extension_present() == true) {
+            // Call the BU MWP class method only if the class and method exist.
+            if (
+                class_exists('\\local_boost_union_mwp\\local\\settings') &&
+                    method_exists('\\local_boost_union_mwp\\local\\settings', 'get_ineffective_setting_notification')
+            ) {
+                // Enhance the description for Workplace sites.
+                $description = \local_boost_union_mwp\local\settings::get_ineffective_setting_notification(
+                    'categorylistingheading'
+                );
+            }
+        }
+        $setting = new admin_setting_heading($name, $title, $description);
         $tab->add($setting);
 
         // Setting: Category listing presentation.
@@ -3275,6 +3321,20 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
             THEME_BOOST_UNION_SETTING_HIDENODESPRIMARYNAVIGATION_CALENDAR => get_string('calendar', 'calendar') .
                     ' (' . get_string('hidenodesprimarynavigationonlyguest', 'theme_boost_union') . ')',
         ];
+
+        // If we are on Moodle Workplace.
+        if (\theme_boost_union\local\mwp::extension_present() == true) {
+            // Call the BU MWP class method only if the class and method exist.
+            if (
+                class_exists('\\local_boost_union_mwp\\local\\settings') &&
+                    method_exists('\\local_boost_union_mwp\\local\\settings', 'postprocess_hidenodesoptions')
+            ) {
+                // Post-process the options.
+                $hidenodesoptions = \local_boost_union_mwp\local\settings::postprocess_hidenodesoptions(
+                    $hidenodesoptions
+                );
+            }
+        }
 
         // Setting: Hide nodes in primary navigation.
         $name = 'theme_boost_union/hidenodesprimarynavigation';
@@ -5656,6 +5716,19 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
         // Add settings page to the admin settings category.
         $ADMIN->add('theme_boost_union', $page);
 
+        // If we are on Moodle Workplace.
+        if (\theme_boost_union\local\mwp::extension_present() == true) {
+            // Create external pages again to make it show in the Moodle Workplace settings tree as well as
+            // Moodle Workplace does not recognize the external page for some reason.
+            $flavourspage = new admin_externalpage(
+                'theme_boost_union_flavours',
+                get_string('configtitleflavours', 'theme_boost_union', null, true),
+                new core\url('/theme/boost_union/flavours/overview.php'),
+                'theme/boost_union:configure'
+            );
+            $ADMIN->add('theme_boost_union', $flavourspage);
+        }
+
         // Create SCSS snippets settings page with tabs (and external pages).
         // (and allow users with the theme/boost_union:configure capability to access it).
         $page = new admin_settingspage_tabs_with_external_and_tertiary(
@@ -5751,6 +5824,19 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
 
         // Add settings page to the admin settings category.
         $ADMIN->add('theme_boost_union', $page);
+
+        // If we are on Moodle Workplace.
+        if (\theme_boost_union\local\mwp::extension_present() == true) {
+            // Create external pages again to make it show in the Moodle Workplace settings tree as well as
+            // Moodle Workplace does not recognize the external page for some reason.
+            $smartmenuspage = new admin_externalpage(
+                'theme_boost_union_smartmenus',
+                get_string('smartmenus', 'theme_boost_union', null, true),
+                new core\url('/theme/boost_union/smartmenus/menus.php'),
+                'theme/boost_union:configure'
+            );
+            $ADMIN->add('theme_boost_union', $smartmenuspage);
+        }
     }
 
     // Add JS to remember the active admin tab to the page.

@@ -32,6 +32,18 @@ require_once($CFG->dirroot . '/theme/boost_union/flavours/flavourslib.php');
 $footnotesetting = get_config('theme_boost_union', 'footnote');
 $format = FORMAT_HTML;
 
+// If we are on Moodle Workplace.
+if (\theme_boost_union\local\mwp::extension_present() == true) {
+    // Call the BU MWP class method only if the class and method exist.
+    if (
+        class_exists('\\local_boost_union_mwp\\local\\branding') &&
+            method_exists('\\local_boost_union_mwp\\local\\branding', 'get_overridden_footertext')
+    ) {
+        // Get the potentially branding-overridden footnote.
+        $footnotesetting = \local_boost_union_mwp\local\branding::get_overridden_footertext($footnotesetting);
+    }
+}
+
 // If any flavour applies to this page and defines a non-empty footnote.
 $flavour = theme_boost_union_get_flavour_which_applies();
 if ($flavour !== null && !html_is_blank($flavour->content_footnote)) {

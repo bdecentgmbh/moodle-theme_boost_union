@@ -839,6 +839,9 @@ Having said that, here's the order how all the SCSS code is added to the SCSS st
 3. `theme_boost_union` > `get_pre_scss()`:
    * Adds the Boost Union Pre SCSS from disk\
      (which is located on `/theme/boost_union/scss/boost_union/pre.scss` and which is empty currently)
+   * If we are on Moodle Workplace:\
+     * Adds the Boost Union MWP Pre SCSS from disk\
+       (which is located on `/local/boost_union_mwp/scss/pre.scss`)
    * Sets several SCSS variables based on Boost Union or Boost Union flavour settings
    * Adds the Boost Union external Pre SCSS\
      (which is set on `/admin/settings.php?section=theme_boost_union_look#theme_boost_union_look_scss`)
@@ -846,13 +849,20 @@ Having said that, here's the order how all the SCSS code is added to the SCSS st
      (which is set within the active flavour on `/theme/boost_union/flavours/overview.php`)
 
 4. `theme_boost_union` > `get_main_scss()`:
-   * Calls the `theme_boost` > `get_main_scss()` function
-     * Adds the Boost Core Preset\
-       (which is set on `/admin/settings.php?section=themesettingboost` and defaults to the `/theme/boost/scss/preset/default.scss` file).
-       With this preset, the FontAwesome library, the Bootstrap library and all the Moodle core stylings are added which means that this preset is the place where all the Moodle core style is added.
+   * If we are on Moodle LMS:
+     * Calls the `theme_boost` > `get_main_scss()` function
+       * Adds the Boost Core Preset\
+         (which is set on `/admin/settings.php?section=themesettingboost` and defaults to the `/theme/boost/scss/preset/default.scss` file).
+         With this preset, the FontAwesome library, the Bootstrap library and all the Moodle core stylings are added which means that this preset is the place where all the Moodle core style is added.
+   * If we are on Moodle Workplace:\
+     * Calls the `theme_workplace` > `get_main_scss()` function
+       From this parent theme, the FontAwesome library, the Bootstrap library and all the Moodle core and Workplace stylings are added which means that this preset is the place where all the Moodle core style is added.
    * Adds the Boost Union Post SCSS from disk\
      (which is located on `/theme/boost_union/scss/boost_union/post.scss`)
      This file holds all the Boost Union specific SCSS code which can be added to the stack without being dependent on specific configurations like configured colors or sizes.
+   * If we are on Moodle Workplace:\
+     * Adds the Boost Union MWP Post SCSS from disk\
+       (which is located on `/local/boost_union_mwp/scss/post.scss`)
    * Adds the Boost Union external SCSS\
      (which is set on `/admin/settings.php?section=theme_boost_union_look#theme_boost_union_look_scss`)
    * Adds the Boost Union SCSS snippets\
@@ -866,6 +876,9 @@ Having said that, here's the order how all the SCSS code is added to the SCSS st
 
 6. `theme_boost_union` > `get_extra_scss()`:
    * Overrides / enhances the background images which have been set before
+   * If we are on Moodle Workplace:\
+     * Adds the Moodle Workplace tenant branding Custom SCSS\
+       (which is set within the active tenant on `/admin/tool/tenant/index.php`)
    * Adds the Boost Union flavour Post SCSS\
      (which is set within the active flavour on `/theme/boost_union/flavours/overview.php`)
    * Adds the Boost Union features' SCSS.
