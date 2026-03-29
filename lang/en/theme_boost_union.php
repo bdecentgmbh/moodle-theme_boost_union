@@ -65,6 +65,13 @@ $string['nocourseoverride'] = 'This setting cannot be overridden in the course s
 // Settings: General strings.
 $string['dontchange'] = 'Do not change anything';
 $string['tertiarysettings'] = 'List of Boost Union settings pages';
+$string['settingsupplementlms'] = 'This setting can be supplemented within <a href="{$a->lmsurl}">Boost Union flavours</a>.';
+$string['settingsupplementlmsmwp'] = 'This setting can be supplemented within the <a href="{$a->mwpurl}">Moodle Workplace tenant brandings</a> and <a href="{$a->lmsurl}">Boost Union flavours</a> (in this order).';
+$string['settingsupplementmwp'] = 'This setting can be supplemented within the <a href="{$a->mwpurl}">Moodle Workplace tenant brandings</a>.';
+$string['settingoverridelms'] = 'This setting can be overridden within <a href="{$a->lmsurl}">Boost Union flavours</a>.';
+$string['settingoverridelmsmwp'] = 'This setting can be overridden within the <a href="{$a->mwpurl}">Moodle Workplace tenant brandings</a> and <a href="{$a->lmsurl}">Boost Union flavours</a> (in this order).';
+$string['settingoverridemwp'] = 'This setting can be overridden within the <a href="{$a->mwpurl}">Moodle Workplace tenant brandings</a>.';
+
 
 // Settings: General warnings.
 $string['warningslashargumentsdisabled'] = 'Warning: The <a href="{$a->url}">slasharguments setting</a> is disabled in your Moodle configuration currently. However, this setting is required for the correct operation of the following Boost Union setting. Please enable slasharguments, otherwise the following Boost Union setting will not have any effect.';
@@ -162,7 +169,7 @@ $string['blockdrawerwidthsetting_desc'] = 'With this setting, you can override M
 $string['sitebrandingtab'] = 'Site branding';
 // ... Section: Logos.
 $string['logosheading'] = 'Logos';
-$string['logosheading_desc'] = 'Please note: Boost Union has its own logo upload and does not use the logo from <a href="{$a}">Moodle core\'s logo setting</a>.<br />Boost Union especially allows you to upload more image formats that Moodle core allows and allows you to override the uploaded logos within its flavours.';
+$string['logosheading_desc'] = 'Please note: Boost Union has its own logo upload and does not use the logo from <a href="{$a}">Moodle core\'s logo setting</a>.<br />Boost Union allows you to upload more image formats that Moodle core allows.';
 // ... ... Setting: Logo.
 $string['logosetting'] = 'Logo';
 $string['logosetting_desc'] = 'Here, you can upload a full logo to be used as decoration. This image is especially used on the login page. This image can be quite high resolution because it will be scaled down for use.';
@@ -171,7 +178,7 @@ $string['logocompactsetting'] = 'Compact logo';
 $string['logocompactsetting_desc'] = 'Here, you can upload a compact version of the same logo as above, such as an emblem, shield or icon. This image is especially used in the navigation bar at the top of each Moodle page. The image should be clear even at small sizes.';
 // ... Section: Favicon.
 $string['faviconheading'] = 'Favicon';
-$string['faviconheading_desc'] = 'Please note: Boost Union has its own favicon upload and does not use the favicon from <a href="{$a}">Moodle core\'s favicon setting</a>.<br />Boost Union especially allows you to override the uploaded favicon within its flavours.';
+$string['faviconheading_desc'] = 'Please note: Boost Union has its own favicon upload and does not use the favicon from <a href="{$a}">Moodle core\'s favicon setting</a>.';
 // ... ... Setting: Favicon
 $string['faviconsetting'] = 'Favicon';
 $string['faviconsetting_desc'] = 'Here, you can upload a custom image (.ico or .png format) that the browser will show as the favicon of your Moodle website. If no custom favicon is uploaded, a standard Moodle favicon will be used.';

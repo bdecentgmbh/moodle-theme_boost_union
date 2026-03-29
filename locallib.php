@@ -3059,40 +3059,60 @@ function theme_boost_union_build_fa_icon_map() {
 /**
  * Helper function to build a notification about possible setting overrides.
  *
- * @param bool $mwp If yes, the notification will make clear that the setting override is relevant for Moodle Workplace as well.
- *                  If no, the notification will make clear that the setting override is relevant for Moodle LMS only.
+ * @param int $mwp If 0, the notification will make clear that the setting override is relevant for Moodle LMS only.
+ *                 If 1, the notification will make clear that the setting override is relevant for Moodle Workplace as well.
+ *                 If 2, the notification will make clear that the setting override is relevant for Moodle Workplace only.
  * @param bool $supplement If yes, the 'supplement' version of the string is used instead of the 'override' version.
  * @return string The HTML for the notification.
  */
-function theme_boost_union_render_render_setting_override_notification($mwp = false, $supplement = false) {
+function theme_boost_union_render_setting_override_notification(int $mwp = 0, bool $supplement = false): string {
     global $OUTPUT;
 
-    // If we are on Moodle Workplace and if the setting is relevant for Moodle Workplace.
-    if (\theme_boost_union\local\mwp::extension_present() == true && $mwp == true) {
-        // Define the URLs for the notification.
-        $mwpurl = new \core\url('/admin/tool/tenant/index.php');
-        $lmsurl = new \core\url('/theme/boost_union/flavours/overview.php');
-        $urls = ['mwpurl' => $mwpurl, 'lmsurl' => $lmsurl];
+    // Prepare some common variables.
+    $ismwpinstance = \theme_boost_union\local\mwp::extension_present() == true;
+    $lmsurl = new \core\url('/theme/boost_union/flavours/overview.php');
+    $mwpurl = new \core\url('/admin/tool/tenant/index.php');
 
-        // Pick the Moodle Workplace specific string.
-        if ($supplement) {
-            $langstring = get_string('settingsupplementmwp', 'theme_boost_union', $urls, true);
-        } else {
-            $langstring = get_string('settingoverridemwp', 'theme_boost_union', $urls, true);
-        }
+    // Early return for mode 2 on Moodle LMS.
+    if ($mwp == 2 && !$ismwpinstance) {
+        return '';
+    }
 
-        // Otherwise.
-    } else {
-        // Define the URLs for the notification.
-        $lmsurl = new \core\url('/theme/boost_union/flavours/overview.php');
-        $urls = ['lmsurl' => $lmsurl];
+    // Determine language string and URL placeholders based on mwp mode.
+    switch ($mwp) {
+        case 2:
+            // Compose the notification for Workplace.
+            $urls = ['mwpurl' => $mwpurl];
+            if ($supplement) {
+                $langstring = get_string('settingsupplementmwp', 'theme_boost_union', $urls, true);
+            } else {
+                $langstring = get_string('settingoverridemwp', 'theme_boost_union', $urls, true);
+            }
+            break;
+        case 1:
+            // If we are on Workplace.
+            if ($ismwpinstance) {
+                // Compose the notification for Workplace.
+                $urls = ['mwpurl' => $mwpurl, 'lmsurl' => $lmsurl];
+                if ($supplement) {
+                    $langstring = get_string('settingsupplementlmsmwp', 'theme_boost_union', $urls, true);
+                } else {
+                    $langstring = get_string('settingoverridelmsmwp', 'theme_boost_union', $urls, true);
+                }
+                break;
+            }
 
-        // Pick the string for Moodle LMS.
-        if ($supplement) {
-            $langstring = get_string('settingsupplementlms', 'theme_boost_union', $urls, true);
-        } else {
-            $langstring = get_string('settingoverridelms', 'theme_boost_union', $urls, true);
-        }
+            // If we are on Moodle LMS, fall through to the next case.
+        case 0:
+        default:
+            // Compose the notification for Moodle LMS.
+            $urls = ['lmsurl' => $lmsurl];
+            if ($supplement) {
+                $langstring = get_string('settingsupplementlms', 'theme_boost_union', $urls, true);
+            } else {
+                $langstring = get_string('settingoverridelms', 'theme_boost_union', $urls, true);
+            }
+            break;
     }
 
     // Build the notification.

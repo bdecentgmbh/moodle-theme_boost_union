@@ -6,6 +6,7 @@ Changes
 
 ### Unreleased
 
+* 2026-04-11 - Improvement: Add notes to each of the global settings which can be overridden by flavours.
 * 2026-04-11 - Glitch: Fix an inconsistency with the fallback CSS sheet for flavours
 * 2026-04-11 - Workplace: Add support for a Moodle Workplace Extension for Boost Union, resolves #409
 * 2026-04-08 - Improvement: Tweak the edit button colors so that it better fits onto tinted navbars.
