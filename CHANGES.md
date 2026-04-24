@@ -6,6 +6,7 @@ Changes
 
 ### Unreleased
 
+* 2026-04-11 - Internal change: Move theme_boost_union_is_active_theme() and theme_boost_union_is_active_childtheme() from locallib.php to lib.php
 * 2026-04-11 - Internal change: In the flavours edit form, use setDefault instead of setSelected.
 * 2026-04-11 - Improvement: Add notes to each of the global settings which can be overridden by flavours.
 * 2026-04-11 - Glitch: Fix an inconsistency with the fallback CSS sheet for flavours
