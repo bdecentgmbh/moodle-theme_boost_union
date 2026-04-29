@@ -2316,7 +2316,11 @@ body.theme_boost-union-footerbuttonnone.jsenabled {
             /* Dropdown more menu back button arrow margin */
             .boost-union-moremenu.dropdown-menu .carousel-navigation-link > * {
                 pointer-events: none;
+                // Make the image size width default size.
                 img {
+                    width: 20px;
+                    height: 23px;
+                    font-size: 20px;
                     margin: 0;
                 }
             }
@@ -2843,12 +2847,19 @@ body.theme_boost-union-footerbuttonnone.jsenabled {
                 font-size: .975rem;
                 display: flex;
                 align-items: center;
+                // Set padding for the carousel navigation link in the submenu header.
+                a.carousel-navigation-link {
+                    padding: .1rem .75rem;
+                }
             }
         }
         /* Removed the margin for the carousel back button arrow */
         &.fixed-bottom .boost-union-moremenu.dropdown-menu .carousel-navigation-link > * {
             pointer-events: none;
             img {
+                width: 20px;
+                height: 23px;
+                font-size: 20px;
                 margin: 0;
             }
         }

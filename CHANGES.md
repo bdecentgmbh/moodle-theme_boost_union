@@ -5,6 +5,7 @@ Changes
 -------
 ### Unreleased
 
+* 2026-04-26 - Bugfix: Align the style of the smart menu carousel, resolves #951
 * 2026-04-26 - Bugfix: Make the 'heading' menu item look less like a disabled regular menu item, resolves #858
 * 2026-04-26 - Bugfix: Showing the smart menu description as help text is not styled well, resolves #963
 

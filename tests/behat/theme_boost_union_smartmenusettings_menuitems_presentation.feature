@@ -567,6 +567,32 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
     And I should not see "Test course1" in the "#usermenu-carousel" "css_element"
 
   @javascript
+  Scenario: Smartmenus: Menu items: Presentation - Align the carousel submenu header style consistently across locations
+    Given the following "theme_boost_union > smart menu item" exists:
+      | menu     | Quick links       |
+      | title    | Available courses |
+      | itemtype | Dynamic courses   |
+      | category | 0                 |
+      | itemmode | Submenu           |
+    When I log in as "admin"
+    # Main navigation: navigate into the submenu and assert the header is a flex container.
+    And I click on "Quick links" "link" in the ".primary-navigation" "css_element"
+    And I click on "Available courses" "link" in the ".primary-navigation" "css_element"
+    Then ".primary-navigation .carousel-item.active.submenu .header" "css_element" should exist
+    And DOM element ".primary-navigation .carousel-item.active.submenu .header a.carousel-navigation-link" should have computed style "padding" "1.6px 12px"
+    # Menu bar: navigate into the submenu and assert the header is a flex container.
+    And I click on "Quick links" "link" in the ".boost-union-menubar" "css_element"
+    And I click on "Available courses" "link" in the ".boost-union-menubar" "css_element"
+    Then ".boost-union-menubar .carousel-item.active.submenu .header" "css_element" should exist
+    And DOM element ".boost-union-menubar .carousel-item.active.submenu .header a.carousel-navigation-link" should have computed style "padding" "1.6px 12px"
+    # User menu: navigate into the submenu and assert the navigation link is itself a flex container.
+    And I click on "#user-menu-toggle" "css_element"
+    And I click on "Quick links" "link" in the "#usermenu-carousel" "css_element"
+    And I click on "Available courses" "link" in the "#usermenu-carousel" "css_element"
+    Then "#usermenu-carousel .carousel-item.active.submenu .header .carousel-navigation-link" "css_element" should exist
+    And DOM element "#usermenu-carousel .carousel-item.active.submenu .header .carousel-navigation-link" should have computed style "padding" "1.6px 12px"
+
+  @javascript
   Scenario: Smartmenus: Menu items: Presentation - Opening a smart menu submenu should not scroll to top of the page
     Given the following "theme_boost_union > smart menu" exists:
       | title    | All courses     |
