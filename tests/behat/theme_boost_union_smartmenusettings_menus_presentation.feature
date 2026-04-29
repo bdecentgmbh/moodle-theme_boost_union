@@ -33,6 +33,25 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
       # For this example, we duplicate a step into the specificcheck as we need to fill it but there isn't anything to check anymore
       | Never           | should not | should not | "i.fa-circle-question" "css_element" should not exist in the ".primary-navigation" "css_element" |
 
+  @javascript
+  Scenario: Smartmenu: Menus: Presentation - Display the help description in the main navigation with the expected styling
+    Given the following "theme_boost_union > smart menu" exists:
+      | title           | Useful Resources                  |
+      | location        | Main navigation                   |
+      | description     | List of useful external resources |
+      | showdescription | Help                              |
+    And the following "theme_boost_union > smart menu item" exists:
+      | menu     | Useful Resources |
+      | title    | Info             |
+      | itemtype | Heading          |
+    When I log in as "admin"
+    And I click on "Useful Resources" "link" in the ".primary-navigation" "css_element"
+    Then ".primary-navigation .menu-helpicon" "css_element" should exist
+    And ".primary-navigation .menu-helpicon i.fa-circle-question" "css_element" should exist
+    And ".primary-navigation .menu-helpicon" "css_element" should appear before "Info" "link"
+    And DOM element ".primary-navigation .menu-helpicon a" should have computed style "text-decoration-line" "none"
+    And DOM element ".primary-navigation .menu-helpicon a" should have computed style "box-shadow" "none"
+
   Scenario: Smartmenu: Menus: Presentation - Include the custom css class to a smart menu
     Given the following "theme_boost_union > smart menu" exists:
       | title    | Quick links                                      |

@@ -2417,6 +2417,13 @@ body.theme_boost-union-footerbuttonnone.jsenabled {
                     .menu-helpicon {
                         text-align: center;
                         margin-bottom: 10px;
+                        /* Center align the help icon link and removed the default text decoration */
+                        a {
+                            text-decoration: none;
+                            border-radius: 0;
+                            box-shadow: none;
+                            justify-content: center;
+                        }
                         /* Margin removed in the menu description help icon in the menu */
                         i {
                             margin: 0;

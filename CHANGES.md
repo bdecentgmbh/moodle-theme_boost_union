@@ -3,6 +3,9 @@ moodle-theme_boost_union
 
 Changes
 -------
+### Unreleased
+
+* 2026-04-26 - Bugfix: Showing the smart menu description as help text is not styled well, resolves #963
 
 ### v5.1-r11
 
