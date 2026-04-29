@@ -906,8 +906,9 @@ class smartmenu_item {
         $query = (object) [
             'select' => ['c.*'],
             'join' => [],
-            'where' => [],
-            'params' => [],
+            // Exclude the site course (home) from the results.
+            'where' => ['c.id <> :siteid'],
+            'params' => ['siteid' => SITEID],
         ];
 
         // Courses from categories.

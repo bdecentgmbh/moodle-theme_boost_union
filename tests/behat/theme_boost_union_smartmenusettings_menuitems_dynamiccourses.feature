@@ -181,6 +181,21 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, usi
       | Present               | should     | should not | should not | should     | should     |
       | Past                  | should not | should     | should not | should not | should not |
 
+  Scenario: Smartmenus: Menu items: Dynamic courses - Date range present does not include the site home as course
+    Given the following config values are set as admin:
+      | name      | value                     |
+      | shortname | Smart menu home regression |
+    And the following "theme_boost_union > smart menu item" exists:
+      | menu      | List menu          |
+      | title     | Dynamic courses    |
+      | itemtype  | Dynamic courses    |
+      | itemmode  | Submenu            |
+      | daterange | Present            |
+    When I log in as "student1"
+    Then I should see smart menu "List menu" item "Course 01" in location "Main, Menu, Bottom"
+    And I should see smart menu "List menu" item "Course 04" in location "Main, Menu, Bottom"
+    And I should not see smart menu "List menu" item "Smart menu home regression" in location "Main, Menu, Bottom"
+
   @javascript
   Scenario Outline: Smartmenus: Menu items: Dynamic courses - Compose the dynamic course list based on the starred courses condition
     Given the following "theme_boost_union > smart menu item" exists:
