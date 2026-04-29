@@ -107,6 +107,18 @@ Feature: Configuring the theme_boost_union plugin on the "Smart menus" page, app
     And the "href" attribute of "//div[@class='bottom-navigation']//a[contains(@class, 'menu-item-heading')]" "xpath_element" should contain "#"
     And the "href" attribute of "//div[@class='bottom-navigation']//a[contains(@class, 'menu-item-static')]" "xpath_element" should contain "https://moodle.org"
 
+  @javascript
+  Scenario: Smartmenus: Menu items: Presentation - Display the heading item with a distinct background style
+    Given the following "theme_boost_union > smart menu item" exists:
+      | menu     | Quick links    |
+      | title    | External links |
+      | itemtype | Heading        |
+    When I log in as "admin"
+    And I click on "Quick links" "link" in the ".primary-navigation" "css_element"
+    Then ".primary-navigation .dropdown-item.menu-item-heading" "css_element" should exist
+    And DOM element ".primary-navigation .dropdown-item.menu-item-heading" should have computed style "font-weight" "500"
+    And DOM element ".primary-navigation .dropdown-item.menu-item-heading" should have computed style "color" "rgb(102, 102, 102)"
+
   Scenario: Smartmenus: Menu items: Presentation - Display the menu items in different order
     Given the following "theme_boost_union > smart menu item" exists:
       | menu     | Quick links         |

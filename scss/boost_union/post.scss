@@ -2451,9 +2451,20 @@ body.theme_boost-union-footerbuttonnone.jsenabled {
                         &:before {
                             display: none;
                         }
+                        // Style for menu item headings
                         &.menu-item-heading {
                             font-size: 14px;
-                            opacity: .6;
+                            font-weight: 500;
+                            color: #666;
+                            // Prevent background color change and set cursor to text for non-clickable menu headings on hover
+                            &:hover {
+                                background-color: transparent;
+                                cursor: text;
+                            }
+                            // Add top margin to menu heading items except the first Menu heading item in the dropdown menu
+                            &:not(:first-child) {
+                                margin-top: 0.5rem;
+                            }
                             /* Menu link icon font size when the menu link as "Heading" and "icon" option selected in
                                the settings */
                             i.icon {
