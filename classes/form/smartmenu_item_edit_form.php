@@ -446,7 +446,6 @@ class smartmenu_item_edit_form extends \moodleform {
         // Add CSS class as input element.
         $mform->addElement('text', 'cssclass', get_string('smartmenusmenuitemcssclass', 'theme_boost_union'));
         $mform->setType('cssclass', PARAM_TEXT);
-        $mform->hideIf('cssclass', 'type', 'eq', smartmenu_item::TYPEDIVIDER);
         $mform->addHelpButton('cssclass', 'smartmenusmenuitemcssclass', 'theme_boost_union');
 
         // Add course list ordering (for the dynamic courses menu item type) as select element.

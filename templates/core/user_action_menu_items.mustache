@@ -66,6 +66,7 @@
     * Add tooltip to items.
     * Add additional attributes to items.
     * Allow formatted text within the item.
+    * Add support for custom CSS classes to the divider.
 }}
 {{#items}}
     {{#link}}
@@ -91,5 +92,5 @@
             {{#text}}{{{text}}}{{/text}}{{^text}}{{title}}{{/text}}
         </a>
     {{/submenulink}}
-    {{#divider}}<div class="dropdown-divider"></div>{{/divider}}
+    {{#divider}}<div class="dropdown-divider {{#itemdata.cssclass}} {{.}} {{/itemdata.cssclass}}"></div>{{/divider}}
 {{/items}}

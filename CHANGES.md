@@ -3,6 +3,9 @@ moodle-theme_boost_union
 
 Changes
 -------
+### Unreleased
+
+* 2026-04-29 - Improvement: Support CSS classes for smart menu dividers, resolves #996
 
 ### v5.1-r11
 
