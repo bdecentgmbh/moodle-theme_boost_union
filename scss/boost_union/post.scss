@@ -3644,3 +3644,1344 @@ body.dir-rtl {
         }
     }
 }
+
+
+/*---------------------------------------
+ * Navigation layout: Left sidebar.
+ *
+ * The 'Left sidebar' navigation layout (navigationlayout = sidebar) replaces the top navbar with a vertical
+ * sidebar on the left edge of the page. The sidebar holds the brand/logo, the primary navigation and - pinned
+ * to the bottom - the notifications, the user menu and the language menu.
+ *
+ * On desktop (>= lg) the sidebar is persistent and can be collapsed to an icon-only rail
+ * (.theme-navsidebar-collapsed). On mobile (< lg) it behaves as an off-canvas overlay which is opened via the
+ * floating menu button and closed via the backdrop (.theme-navsidebar-mobileopen).
+ *
+ * The $bu-navigationsidebarwidth variable is injected via theme_boost_union_get_pre_scss() from the
+ * 'navigationsidebarwidth' admin setting.
+ --------------------------------------*/
+
+/* The width of the collapsed icon rail. */
+$bu-navsidebar-rail-width: 60px !default;
+
+.theme-navlayout-sidebar {
+    /* ===== The sidebar shell ===== */
+    .bu-navsidebar {
+        display: flex;
+        flex-direction: column;
+        background-color: var(--bs-body-bg);
+        border-right: 1px solid var(--bs-border-color);
+        /* Keep visible so the bottom popover panels (notifications / messaging) can open out of the sidebar.
+           The scrollable middle region clips its own overflow instead. */
+        overflow: visible;
+    }
+
+    /* Top: brand + collapse toggle. */
+    .bu-navsidebar__top {
+        display: flex;
+        align-items: center;
+        flex: 0 0 auto;
+        height: $navbar-height + 1px;
+        padding: 0 0.5rem 0 1rem;
+        border-bottom: 1px solid var(--bs-border-color);
+    }
+
+    .bu-navsidebar__brand {
+        display: flex;
+        align-items: center;
+        flex: 1 1 auto;
+        min-width: 0;
+        font-weight: 700;
+        color: var(--bs-body-color);
+        text-decoration: none;
+        white-space: nowrap;
+        overflow: hidden;
+    }
+
+    .bu-navsidebar__logo {
+        max-height: $navbar-height - 20px;
+        width: auto;
+    }
+
+    .bu-navsidebar__sitename {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .bu-navsidebar__toggleicon {
+        transition: transform 0.24s ease;
+    }
+
+    /* Middle: scrollable navigation. The min-height:0 lets it shrink so the bottom area is never pushed off-screen. */
+    .bu-navsidebar__nav {
+        flex: 1 1 auto;
+        min-height: 0;
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 0.5rem;
+    }
+
+    /* Hide the vertical divider elements which Boost renders between navbar items; they make no sense here. */
+    .divider {
+        display: none;
+    }
+
+    /* A navigation item (a leaf link or the parent row link). */
+    .bu-navsidebar__item {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        width: 100%;
+        margin: 2px 0;
+        padding: 0.55rem 0.7rem;
+        border: 0;
+        border-radius: $border-radius;
+        color: var(--bs-body-color);
+        text-decoration: none;
+        white-space: nowrap;
+
+        &:hover {
+            background-color: rgba($primary, 0.08);
+            color: $primary;
+        }
+
+        &.active {
+            background-color: rgba($primary, 0.12);
+            color: $primary;
+            font-weight: 600;
+        }
+    }
+
+    .bu-navsidebar__icon {
+        flex: 0 0 1.5rem;
+        text-align: center;
+        font-size: 1.05rem;
+    }
+
+    .bu-navsidebar__monogram {
+        display: inline-grid;
+        place-items: center;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: $border-radius-sm;
+        background-color: rgba($primary, 0.12);
+        font-size: 0.8rem;
+        font-weight: 700;
+        color: $primary;
+    }
+
+    .bu-navsidebar__label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* Items with children: a row (link + expand caret) and a collapsible sub list. */
+    .bu-navsidebar__parentrow {
+        display: flex;
+        align-items: center;
+
+        .bu-navsidebar__item {
+            flex: 1 1 auto;
+            width: auto;
+        }
+    }
+
+    .bu-navsidebar__expand {
+        flex: 0 0 auto;
+        border: 0;
+        padding: 0.25rem 0.5rem;
+        background: transparent;
+        color: var(--bs-secondary-color);
+
+        .bu-navsidebar__caret {
+            transition: transform 0.2s ease;
+        }
+
+        &:not(.collapsed) .bu-navsidebar__caret {
+            transform: rotate(180deg);
+        }
+    }
+
+    .bu-navsidebar__sub {
+        margin: 0 0 0.25rem;
+        padding: 0;
+    }
+
+    .bu-navsidebar__subitem {
+        display: block;
+        padding: 0.4rem 0.7rem 0.4rem 3.05rem;
+        border-radius: $border-radius;
+        color: var(--bs-secondary-color);
+        text-decoration: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        &:hover {
+            background-color: rgba($primary, 0.08);
+            color: $primary;
+        }
+
+        &.active {
+            color: $primary;
+            font-weight: 600;
+        }
+    }
+
+    /* Bottom: notifications/messaging, user menu and language menu. */
+    /* The edit mode switch is pinned to the top right of the viewport with a small backdrop. */
+    .bu-navsidebar__editswitch {
+        position: fixed;
+        top: 0.6rem;
+        right: 0.6rem;
+        z-index: $zindex-fixed + 1;
+        padding: 0.2rem 0.6rem;
+        background-color: var(--bs-body-bg);
+        border: 1px solid var(--bs-border-color);
+        border-radius: 999px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+
+        /* Hide the backdrop entirely when the user cannot edit (the edit switch output is then empty). */
+        &:empty {
+            display: none;
+        }
+
+        form {
+            margin: 0;
+        }
+    }
+
+    /* The bottom area holds the notifications/messaging popovers, the user menu and the language menu. */
+    .bu-navsidebar__bottom {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.5rem;
+        border-top: 1px solid var(--bs-border-color);
+    }
+
+    /* The notifications/messaging row. Overflow must stay visible so the popover panels can escape the sidebar. */
+    .bu-navsidebar__tools {
+        flex: 0 0 auto;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 0.15rem;
+
+        /* The popover toggle is the positioning context for its panel and its count badge. */
+        .popover-region {
+            position: relative;
+        }
+
+        /* Normalise the notification/message toggle into a tidy square icon button. */
+        .popover-region-toggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            border-radius: $border-radius;
+            color: var(--bs-body-color);
+
+            &:hover {
+                background-color: rgba($primary, 0.08);
+                color: $primary;
+            }
+        }
+
+        /* Other plugin items rendered into the navbar output: keep their content readable. */
+        > .nav-link,
+        > div > .nav-link,
+        > a {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            min-height: 40px;
+            padding: 0 0.5rem;
+            border-radius: $border-radius;
+            color: var(--bs-body-color);
+
+            &:hover {
+                background-color: rgba($primary, 0.08);
+                color: $primary;
+            }
+        }
+
+        /* Reposition the count badge to the top-right corner of the square toggle. */
+        .count-container {
+            top: 2px;
+            right: 2px;
+            min-width: 16px;
+            padding: 0 4px;
+            font-size: 0.62rem;
+            line-height: 1.35;
+            text-align: center;
+        }
+
+        /* The popover panels open upward (out of the sidebar) instead of downward off-screen. */
+        .popover-region-container {
+            top: auto;
+            right: auto;
+            bottom: calc(100% + 0.5rem);
+            left: 0;
+            width: 340px;
+            max-width: 92vw;
+            max-height: 70vh;
+            border-radius: $border-radius;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+            z-index: $zindex-fixed + 3;
+        }
+    }
+
+    /* The user menu as a full-width row (avatar + name + caret). */
+    .bu-navsidebar__user {
+        .dropdown-toggle,
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            width: 100%;
+            padding: 0.4rem 0.5rem;
+            border-radius: $border-radius;
+            color: var(--bs-body-color);
+
+            &:hover {
+                background-color: rgba($primary, 0.08);
+            }
+        }
+
+        .userpicture {
+            width: 32px;
+            height: 32px;
+        }
+    }
+
+    /* The floating mobile button and the overlay backdrop are hidden on desktop. */
+    .bu-navsidebar__mobiletoggle,
+    .bu-navsidebar__backdrop {
+        display: none;
+    }
+
+    /* Logo visibility: hide it entirely when the setting is 'none'. */
+    &.theme-navsidebar-logo-none .bu-navsidebar__brand {
+        visibility: hidden;
+    }
+}
+
+/* ===== Desktop: persistent sidebar (>= lg) ===== */
+@include media-breakpoint-up(lg) {
+    .theme-navlayout-sidebar {
+        .bu-navsidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: $zindex-fixed;
+            width: $bu-navigationsidebarwidth;
+            transition: width 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Offset the page content and remove the now-unneeded navbar top offset. */
+        #page,
+        #page.drawers {
+            margin-top: 0;
+            margin-left: $bu-navigationsidebarwidth;
+            transition: margin-left 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* The course index and primary drawers begin to the right of the sidebar. */
+        [data-region="drawer"],
+        .drawer-left,
+        .drawer-primary {
+            top: 0;
+            left: $bu-navigationsidebarwidth;
+            height: 100%;
+        }
+
+        /* Hide the logo on desktop when the setting limits it to mobile only. */
+        &.theme-navsidebar-logo-mobile .bu-navsidebar__brand {
+            visibility: hidden;
+        }
+    }
+
+    /* Collapsed (icon-rail) state on desktop. */
+    .theme-navlayout-sidebar.theme-navsidebar-collapsed {
+        .bu-navsidebar {
+            width: $bu-navsidebar-rail-width;
+        }
+
+        /* Hide the text labels but keep the (compact) logo and the item icons. */
+        .bu-navsidebar__sitename,
+        .bu-navsidebar__label,
+        .bu-navsidebar__lang,
+        .bu-navsidebar__expand {
+            display: none;
+        }
+
+        /* Stack the logo and the collapse toggle in the narrow rail header. */
+        .bu-navsidebar__top {
+            flex-direction: column;
+            height: auto;
+            gap: 0.25rem;
+            padding: 0.5rem 0;
+        }
+
+        .bu-navsidebar__brand {
+            justify-content: center;
+        }
+
+        .bu-navsidebar__logo {
+            max-height: 28px;
+        }
+
+        .bu-navsidebar__toggleicon {
+            transform: rotate(180deg);
+        }
+
+        .bu-navsidebar__item {
+            justify-content: center;
+            gap: 0;
+            padding: 0.55rem 0;
+        }
+
+        /* Let the rail show flyout submenus that escape the narrow column. */
+        .bu-navsidebar__nav {
+            overflow: visible;
+        }
+
+        /* Submenus are hidden in the rail but appear as a flyout to the right when hovering their item. */
+        .bu-navsidebar__group {
+            position: relative;
+        }
+
+        .bu-navsidebar__sub {
+            display: none;
+        }
+
+        .bu-navsidebar__group:hover .bu-navsidebar__sub {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 100%;
+            z-index: $zindex-fixed + 3;
+            min-width: 220px;
+            padding: 0.35rem;
+            background-color: var(--bs-body-bg);
+            border: 1px solid var(--bs-border-color);
+            border-radius: $border-radius;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+
+            .bu-navsidebar__subitem {
+                padding-left: 0.7rem;
+            }
+        }
+
+        /* Stack the bottom tools and centre the user menu as icons in the rail. */
+        .bu-navsidebar__tools {
+            justify-content: center;
+        }
+
+        .bu-navsidebar__user {
+            overflow: hidden;
+
+            .dropdown-toggle,
+            .nav-link {
+                justify-content: center;
+                padding: 0.4rem 0;
+            }
+        }
+
+        #page,
+        #page.drawers {
+            margin-left: $bu-navsidebar-rail-width;
+        }
+
+        [data-region="drawer"],
+        .drawer-left,
+        .drawer-primary {
+            left: $bu-navsidebar-rail-width;
+        }
+    }
+
+    /* Expand-on-hover: the collapsed rail temporarily expands to full width while the mouse is over it. */
+    .theme-navlayout-sidebar.theme-navsidebar-collapsed.theme-navsidebar-hoverexpand .bu-navsidebar:hover {
+        width: $bu-navigationsidebarwidth;
+        box-shadow: 0 0 40px rgba(0, 0, 0, 0.15);
+
+        .bu-navsidebar__sitename {
+            display: inline;
+        }
+
+        .bu-navsidebar__label {
+            display: inline;
+        }
+
+        .bu-navsidebar__lang {
+            display: block;
+        }
+
+        .bu-navsidebar__item {
+            justify-content: flex-start;
+            gap: 0.85rem;
+            padding: 0.55rem 0.7rem;
+        }
+    }
+}
+
+/* ===== Mobile: off-canvas overlay (< lg) ===== */
+@include media-breakpoint-down(lg) {
+    .theme-navlayout-sidebar {
+        /* The content is not pushed by the sidebar; it keeps the navbar-less top spacing. */
+        #page,
+        #page.drawers {
+            margin-top: 0;
+            margin-left: 0;
+        }
+
+        /* The sidebar is an off-canvas panel which slides in from the left. */
+        .bu-navsidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: $zindex-fixed + 2;
+            width: 300px;
+            max-width: 85vw;
+            transform: translateX(-100%);
+            transition: transform 0.24s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 0 40px rgba(0, 0, 0, 0.25);
+        }
+
+        /* The header collapse toggle is not used on mobile. */
+        .bu-navsidebar__toggle {
+            display: none;
+        }
+
+        /* The floating menu button is the single icon shown while the sidebar is closed. */
+        .bu-navsidebar__mobiletoggle {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            position: fixed;
+            top: 0.75rem;
+            left: 0.75rem;
+            z-index: $zindex-fixed + 1;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background-color: $primary;
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+        }
+
+        /* The backdrop behind the open overlay. */
+        .bu-navsidebar__backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: $zindex-fixed + 1;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        /* Hide the logo on mobile when the setting limits it to desktop only. */
+        &.theme-navsidebar-logo-desktop .bu-navsidebar__brand {
+            visibility: hidden;
+        }
+    }
+
+    /* When opened, the sidebar slides in and the backdrop becomes visible. */
+    .theme-navlayout-sidebar.theme-navsidebar-mobileopen {
+        .bu-navsidebar {
+            transform: translateX(0);
+        }
+
+        .bu-navsidebar__backdrop {
+            display: block;
+        }
+    }
+}
+
+
+/*---------------------------------------
+ * Navigation layout: Mega menu.
+ *
+ * The 'Mega menu' navigation layout (navigationlayout = megamenu) hides the navigation behind a single corner
+ * trigger which opens a fullscreen overlay. The overlay merges the primary navigation (as cards), the
+ * notifications/messaging, the user menu, the language menu and a dedicated block region (regions.megamenu) for
+ * blocks such as Dash blocks. Opening/closing, focus trap and Escape handling come from the
+ * theme_boost_union/megamenu AMD module.
+ *
+ * The overlay background color is configurable via the navigationmegamenubackground admin setting (injected as
+ * $bu-megamenu-bg). The foreground (text) color and the translucent card surfaces are derived from it so that the
+ * overlay stays readable on both dark and light backgrounds.
+ --------------------------------------*/
+
+/* The contrasting foreground color for the configured overlay background. */
+$bu-megamenu-fg: color-contrast($bu-megamenu-bg) !default;
+
+.theme-navlayout-megamenu {
+    /* There is no top navbar in this layout. Push the content down so it starts below the floating corner control
+       cluster instead of tucking underneath it. */
+    #page,
+    #page.drawers {
+        margin-top: 4.5rem;
+    }
+
+    /* But when the 'Outside (top)' block region holds a block, the page should start at the very top so that the
+       block (e.g. a full-width banner) sits flush against the top edge; the corner cluster simply floats over it. */
+    #page:has(> #theme-block-region-outside-top),
+    #page.drawers:has(> #theme-block-region-outside-top) {
+        margin-top: 0;
+    }
+
+    /* As there is no navbar above, the drawers start at the very top of the viewport. */
+    [data-region="drawer"],
+    .drawer-left,
+    .drawer-right,
+    .drawer-primary {
+        top: 0;
+        height: 100%;
+    }
+
+    /* When a block (e.g. a hero/slider) lives in the 'Outside (top)' region, render it fully chromeless so it fills
+       the top of the page edge-to-edge: remove the block card's padding, margin, border, background, rounding and
+       shadow as well as the content's own top margin.
+       The card body padding and the content/card margins are set with !important because Bootstrap's spacing
+       utilities (p-3, mt-3, mb-3) which the block markup carries are themselves declared with !important. */
+    #theme-block-region-outside-top {
+        .block,
+        .card {
+            /* stylelint-disable-next-line declaration-no-important */
+            margin: 0 !important;
+            border: 0;
+            border-radius: 0;
+            background: transparent;
+            box-shadow: none;
+        }
+
+        .card-body {
+            /* stylelint-disable-next-line declaration-no-important */
+            padding: 0 !important;
+        }
+
+        .content {
+            /* stylelint-disable-next-line declaration-no-important */
+            margin: 0 !important;
+        }
+    }
+}
+
+/* Lock the page scroll while the overlay is open. */
+.theme-megamenu-open {
+    overflow: hidden;
+}
+
+/* The corner control cluster groups the logo, the edit mode switch and the trigger into a single squircle element
+   pinned to the top right of the viewport. */
+.bu-megamenu-corner {
+    position: fixed;
+    top: 0.75rem;
+    right: 1.25rem;
+    z-index: $zindex-fixed + 1;
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.2rem 0.4rem;
+    background-color: var(--bs-body-bg);
+    border: 1px solid var(--bs-border-color);
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+
+    /* Keep every control compact vertically so the cluster stays as slim as possible. */
+    .nav-link,
+    .bu-megamenu-corner__logo,
+    .bu-megamenu-trigger,
+    .editmode-switch-form {
+        min-height: 0;
+        line-height: 1.1;
+    }
+}
+
+/* The logo as a one-click home link. */
+.bu-megamenu-corner__logo {
+    display: flex;
+    align-items: center;
+    padding: 0 0.25rem;
+    color: var(--bs-body-color);
+    font-weight: 700;
+    text-decoration: none;
+
+    img {
+        max-height: 24px;
+        width: auto;
+    }
+}
+
+.bu-megamenu-corner__sitename {
+    max-width: 160px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+/* The menu bar smart menu items shown in the cluster, laid out compactly as quick-access icons. */
+.bu-megamenu-corner__menubar {
+    display: flex;
+    align-items: center;
+
+    .navbar-nav {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.1rem;
+        margin: 0;
+    }
+
+    .nav-link {
+        padding: 0.25rem 0.45rem;
+        border-radius: 8px;
+        color: var(--bs-body-color);
+
+        &:hover {
+            background-color: rgba($primary, 0.08);
+            color: $primary;
+        }
+    }
+}
+
+/* The edit mode switch sits inside the cluster, so it needs no backdrop of its own. To keep the cluster slim, the
+   leading divider and the "Edit mode" text label from the core edit switch markup are hidden. */
+.bu-megamenu-corner__editswitch {
+    display: flex;
+    align-items: center;
+
+    /* Hide it (and let the surrounding gap collapse) when the user cannot edit. */
+    &:empty {
+        display: none;
+    }
+
+    form {
+        margin: 0;
+    }
+
+    .divider {
+        display: none;
+    }
+
+    /* Visually hide the "Edit mode" text label (kept available for assistive technology). */
+    .editmode-switch-form .input-group > label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border: 0;
+    }
+}
+
+/* The trigger which opens the overlay: a dark icon on the light cluster (inverted), kept understated. */
+.bu-megamenu-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.25rem 0.5rem;
+    border: 0;
+    border-radius: 9px;
+    background-color: transparent;
+    color: var(--bs-body-color);
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+
+    &:hover,
+    &:focus {
+        color: var(--bs-body-color);
+        background-color: rgba($primary, 0.1);
+    }
+
+    i {
+        font-size: 1.15rem;
+    }
+}
+
+/* Hidden trigger mode: a discreet square icon button (no label). */
+.theme-megamenu-triggerhidden .bu-megamenu-trigger {
+    padding: 0.25rem;
+
+    .bu-megamenu-trigger__label {
+        display: none;
+    }
+}
+
+/* The fullscreen overlay. */
+.bu-megamenu {
+    position: fixed;
+    inset: 0;
+    z-index: $zindex-modal + 5;
+    display: flex;
+    flex-direction: column;
+    color: $bu-megamenu-fg;
+    background: linear-gradient(135deg, darken($bu-megamenu-bg, 12%), $bu-megamenu-bg);
+    opacity: 0;
+    transform: scale(1.02);
+    transition: opacity 0.24s ease, transform 0.24s ease;
+
+    &[hidden] {
+        display: none;
+    }
+
+    &.is-open {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* Hide the vertical divider elements which Boost renders between navbar items. */
+    .divider {
+        display: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .bu-megamenu {
+        transition: opacity 0.01ms;
+        transform: none;
+    }
+}
+
+.bu-megamenu__bar {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 1.25rem;
+}
+
+.bu-megamenu__brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: $bu-megamenu-fg;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.bu-megamenu__logo {
+    max-height: 44px;
+    width: auto;
+}
+
+.bu-megamenu__close {
+    width: 48px;
+    height: 48px;
+    border: 0;
+    border-radius: 10px;
+    background: transparent;
+    color: $bu-megamenu-fg;
+    font-size: 1.4rem;
+
+    &:hover,
+    &:focus {
+        background: rgba($bu-megamenu-fg, 0.15);
+        color: $bu-megamenu-fg;
+    }
+}
+
+.bu-megamenu__body {
+    flex: 1 1 auto;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 1rem clamp(1.5rem, 6vw, 7rem) 3rem;
+    overflow-y: auto;
+}
+
+/* The primary navigation as a responsive card grid. */
+.bu-megamenu__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    align-items: start;
+    gap: 14px;
+}
+
+.bu-megamenu__card {
+    padding: 1.1rem 1.2rem;
+    background: rgba($bu-megamenu-fg, 0.08);
+    border: 1px solid rgba($bu-megamenu-fg, 0.12);
+    border-radius: 16px;
+    transition: background 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+        background: rgba($bu-megamenu-fg, 0.16);
+        transform: translateY(-3px);
+    }
+}
+
+.bu-megamenu__cardhead {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    color: $bu-megamenu-fg;
+    font-size: 1.05rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.bu-megamenu__cardicon {
+    width: 1.6rem;
+    font-size: 1.4rem;
+    text-align: center;
+}
+
+.bu-megamenu__monogram {
+    display: inline-grid;
+    place-items: center;
+    width: 1.6rem;
+    height: 1.6rem;
+    border-radius: 8px;
+    background: rgba($bu-megamenu-fg, 0.18);
+    font-size: 0.85rem;
+}
+
+.bu-megamenu__cardlinks {
+    margin: 0.6rem 0 0;
+
+    li {
+        margin: 0.15rem 0;
+    }
+
+    a {
+        color: rgba($bu-megamenu-fg, 0.78);
+        font-size: 0.9rem;
+        text-decoration: none;
+
+        &:hover {
+            color: $bu-megamenu-fg;
+        }
+    }
+}
+
+/* A smart menu configured as a card menu: a full-width section with its own grid of image cards. */
+.bu-megamenu__cardmenu {
+    grid-column: 1 / -1;
+    margin: 0.5rem 0;
+}
+
+.bu-megamenu__cardmenutitle {
+    margin: 0 0 0.75rem;
+    color: $bu-megamenu-fg;
+    font-size: 1.05rem;
+    font-weight: 700;
+}
+
+.bu-megamenu__cardgrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.bu-megamenu__imgcard {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid rgba($bu-megamenu-fg, 0.12);
+    border-radius: 14px;
+    background: rgba($bu-megamenu-fg, 0.08);
+    color: $bu-megamenu-fg;
+    text-decoration: none;
+    transition: background 0.2s ease, transform 0.2s ease;
+
+    &:hover {
+        background: rgba($bu-megamenu-fg, 0.16);
+        transform: translateY(-3px);
+        color: $bu-megamenu-fg;
+    }
+}
+
+.bu-megamenu__imgcardimg {
+    display: block;
+    height: 110px;
+    background-position: center;
+    background-size: cover;
+}
+
+.bu-megamenu__imgcardlabel {
+    padding: 0.6rem 0.8rem;
+    font-weight: 600;
+}
+
+/* The block region is shown on a light surface so core block styling stays legible on the overlay. */
+.bu-megamenu__blocks {
+    margin-top: 2rem;
+    padding: 1rem;
+    background: var(--bs-body-bg);
+    color: var(--bs-body-color);
+    border-radius: 16px;
+}
+
+/* The action controls (notifications/messaging, user menu, language, close) on the right of the slim top bar. */
+.bu-megamenu__baractions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* The notifications/messaging row, laid out horizontally and legible on the overlay. */
+.bu-megamenu__tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem;
+
+    .popover-region {
+        position: relative;
+    }
+
+    .popover-region-toggle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        border-radius: 10px;
+        color: $bu-megamenu-fg;
+
+        &:hover {
+            background: rgba($bu-megamenu-fg, 0.15);
+        }
+    }
+
+    > .nav-link,
+    > div > .nav-link,
+    > a {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.25rem;
+        min-height: 44px;
+        padding: 0 0.6rem;
+        border-radius: 10px;
+        color: $bu-megamenu-fg;
+
+        &:hover {
+            background: rgba($bu-megamenu-fg, 0.15);
+        }
+    }
+
+    .count-container {
+        top: 4px;
+        right: 4px;
+        min-width: 16px;
+        padding: 0 4px;
+        font-size: 0.62rem;
+        line-height: 1.35;
+    }
+
+    /* The popover panels open downward (the tools live in the top bar) and are right-aligned to stay on screen,
+       shown on a light surface for legibility. */
+    .popover-region-container {
+        top: calc(100% + 0.5rem);
+        bottom: auto;
+        right: 0;
+        left: auto;
+        width: 340px;
+        max-width: 92vw;
+        max-height: 70vh;
+        color: var(--bs-body-color);
+        border-radius: $border-radius;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+        z-index: $zindex-modal + 10;
+    }
+}
+
+/* The user menu and language menu, legible on the overlay. */
+.bu-megamenu__user {
+    .dropdown-toggle,
+    .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: $bu-megamenu-fg;
+    }
+
+    .userpicture {
+        width: 36px;
+        height: 36px;
+    }
+}
+
+.bu-megamenu__lang .nav-link {
+    color: $bu-megamenu-fg;
+}
+
+
+/*---------------------------------------
+ * Navigation: Secondary navigation position.
+ *
+ * The secondarynavigationposition setting controls where the secondary navigation (the in-page tabs such as
+ * Course, Settings, Participants, …) is shown: in the content (default), as a full-width bar directly below the
+ * navbar, or collapsed behind a three-dot action menu.
+ --------------------------------------*/
+
+/* Height of the 'below navbar' secondary navigation bar (a bit slimmer than the core more-menu height). */
+$bu-secondarynav-belownavbar-height: 46px !default;
+
+/* 'Below navbar' position: a slim, light-grey bar (like the drawers) fixed directly below the top navbar.
+   The core more-menu collapses overflowing items into a 'More' dropdown - this relies on the items being allowed
+   to wrap, so we must NOT set flex-wrap: nowrap here. */
+.secondary-navigation-belownavbar {
+    top: $navbar-height;
+    z-index: $zindex-fixed - 1;
+    display: flex;
+    align-items: center;
+    height: $bu-secondarynav-belownavbar-height;
+    padding: 0 0.5rem;
+    background-color: $gray-100;
+    border-bottom: 1px solid $border-color;
+
+    .secondary-navigation {
+        width: 100%;
+        /* Remove Boost's bottom padding so the bar fits the navigation exactly. */
+        padding-bottom: 0;
+    }
+
+    /* Let the inner navigation blend into the bar and drop its own border (the bar carries the single separator). */
+    .secondary-navigation .navigation {
+        margin: 0;
+        padding: 0;
+        background-color: transparent;
+        border-bottom: 0;
+    }
+
+    /* Match the slimmer bar height and remove the white/gray Boost backgrounds so the grey bar shows through. */
+    .moremenu {
+        height: $bu-secondarynav-belownavbar-height;
+        background-color: transparent;
+
+        .nav-tabs {
+            background-color: transparent;
+        }
+
+        .nav-link {
+            height: $bu-secondarynav-belownavbar-height;
+            /* Tighter horizontal padding so more tabs fit, especially on mobile. */
+            padding-right: 0.6rem;
+            padding-left: 0.6rem;
+
+            &.active {
+                background-color: transparent;
+            }
+        }
+    }
+}
+
+/* Push the content down to clear both the navbar and the secondary bar. */
+.theme-secondarynav-belownavbar-active {
+    #page,
+    #page.drawers {
+        margin-top: calc(#{$navbar-height} + #{$bu-secondarynav-belownavbar-height});
+    }
+}
+
+/* 'Action menu' position: the secondary navigation is collapsed behind a three-dot toggle. */
+.secondary-navigation-actionmenu {
+    .secondary-navigation-actionmenu__toggle {
+        padding: 0.3rem 0.6rem;
+        background: transparent;
+        border: 1px solid var(--bs-border-color);
+        border-radius: $border-radius;
+        color: var(--bs-body-color);
+
+        &:hover,
+        &:focus {
+            background: rgba($primary, 0.08);
+            color: $primary;
+        }
+
+        /* Remove the default Bootstrap dropdown caret; the three-dot icon is the affordance. */
+        &::after {
+            display: none;
+        }
+    }
+
+    .dropdown-menu {
+        min-width: 14rem;
+    }
+}
+
+
+/*---------------------------------------
+ * Navigation: Bottom bar on all viewports (floating dock).
+ *
+ * When the bottombardisplay setting is 'all' (body class .theme-bottombar-all), the mobile bottom bar (a smart
+ * menu configured for the 'Bottom' location) is also shown on tablet and desktop, where it is restyled as a
+ * centered, floating dock - a simpler version of the macOS dock.
+ --------------------------------------*/
+@include media-breakpoint-up(md) {
+    body.theme-bottombar-all {
+        .boost-union-bottom-menu {
+            /* Show it on tablet/desktop too (overriding the mobile-only d-md-none utility). */
+            display: block !important; /* stylelint-disable-line declaration-no-important */
+            /* Float it as a centered dock instead of a full-width bottom bar. */
+            right: auto;
+            left: 50%;
+            bottom: 1rem;
+            width: auto;
+            max-width: calc(100% - 2rem);
+            transform: translateX(-50%);
+            border-radius: 18px;
+
+            .bottom-navigation .more-nav {
+                /* Pack the items together and centre them, instead of spreading them across the screen. */
+                justify-content: center !important; /* stylelint-disable-line declaration-no-important */
+                gap: 0.5rem;
+                padding: 0 0.5rem;
+            }
+        }
+    }
+}
+
+
+/*---------------------------------------
+ * Smart menu card items: icon fallback and bottom bar card sizing.
+ --------------------------------------*/
+
+/* When a card menu item has no real image, the item icon is shown centred (on a light background) in the card's
+   image area. */
+.card-block .img-block .card-icon-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    /* Make the icon area square based on its own width, so the background is reliable regardless of whether the
+       parent .img-block has a resolvable height. */
+    aspect-ratio: 1 / 1;
+    color: $primary;
+    background-color: $gray-200;
+    font-size: 2rem;
+    text-decoration: none;
+
+    i,
+    .icon {
+        margin: 0;
+        line-height: 1;
+    }
+}
+
+/* For icon-fallback cards the icon is already shown large in the image area, so hide the (duplicate) icon that
+   would otherwise also appear in the content block's title. */
+.card-block-iconfallback .content-block h5 a i,
+.card-block-iconfallback .content-block h5 a .icon {
+    display: none;
+}
+
+/* The bottom bar card menu submenu should be wide enough to lay the cards out in a grid instead of a narrow,
+   single-column list (it is otherwise constrained to ~220-260px by the generic navbar dropdown rule). */
+.theme-boost-union-smartmenu .boost-union-bottom-menu .moremenu .card-dropdown .dropdown-menu {
+    min-width: 360px;
+    max-width: 540px;
+}
+
+/* Make the whole card clickable via its overlay link. The overlay element exists in the markup but had no styling,
+   so previously only the image/icon link and the arrow were clickable - which broke when the icon became a span. */
+.card-dropdown .card-block {
+    position: relative;
+
+    .card-item-overlay {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+    }
+}
+
+/* In the bottom bar card menu, the card image area should be square (matching the 'square' card form) instead of a
+   fixed tall height, so that the cards don't look unnecessarily narrow. */
+.boost-union-bottom-menu .card-dropdown .card-block .img-block {
+    height: auto !important; /* stylelint-disable-line declaration-no-important */
+    aspect-ratio: 1 / 1;
+}
+
+
+/* Normalise the item's own icon (used as the glyph in the sidebar and the mega menu cards) so it fills the
+   reserved space at the expected size, instead of the small default core icon size. */
+.bu-megamenu__cardicon i,
+.bu-megamenu__cardicon .icon,
+.bu-navsidebar__icon i,
+.bu-navsidebar__icon .icon {
+    width: auto;
+    height: auto;
+    margin: 0;
+    font-size: inherit;
+    color: inherit;
+    vertical-align: baseline;
+}
+
+.bu-megamenu__cardicon img,
+.bu-navsidebar__icon img {
+    width: 1.4em;
+    height: 1.4em;
+    object-fit: contain;
+}
+
+// ==========================================================================
+// Focused editing mode.
+//
+// When editing and the focused editing mode is active (theme-editing-focused body class), hide all 'Add block'
+// buttons in every region as well as the now-empty block regions, so that the editing interface is not cluttered
+// with the many block regions. Existing blocks and the course content stay fully visible and editable. A toggle
+// button next to the 'Edit mode' switch lets the user reveal the 'Add block' buttons and empty regions on demand.
+// ==========================================================================
+
+body.editing.theme-editing-focused {
+    // Hide all 'Add block' buttons in any region (the custom block regions, the side-pre / side-post block drawers,
+    // the offcanvas and the mega menu editing region). The 'Add block' button is wrapped in a '.d-grid' element, and
+    // the Bootstrap '.d-grid' utility sets 'display: grid !important'; '!important' is therefore required here to
+    // override it, as no amount of selector specificity can win against an '!important' utility.
+    [data-region="add-block-button"] {
+        display: none !important; // stylelint-disable-line declaration-no-important
+    }
+
+    // With the 'Add block' buttons hidden, hide the custom block regions which do not contain any real block, so that
+    // they do not leave behind an empty drop zone. Regions which contain blocks stay visible (the blocks remain
+    // editable); only their 'Add block' button is hidden by the rule above.
+    .theme-block-region:not(:has([data-block])) {
+        display: none;
+    }
+}
+
+// The 'Block regions' toggle button which sits next to the 'Edit mode' switch.
+.theme-focusededit-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: 0;
+    margin-left: 0.5rem;
+    border: 1px solid $border-color;
+    border-radius: $border-radius;
+    background-color: transparent;
+    color: $body-color;
+    line-height: 1;
+
+    &:hover,
+    &:focus {
+        background-color: $gray-100;
+        color: $body-color;
+    }
+
+    // The 'active' (pressed) state means the block regions are currently revealed (full editing).
+    &.active {
+        background-color: $primary;
+        border-color: $primary;
+        color: color-contrast($primary);
+
+        &:hover,
+        &:focus {
+            background-color: $primary;
+            color: color-contrast($primary);
+        }
+    }
+}

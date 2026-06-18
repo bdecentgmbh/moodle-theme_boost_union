@@ -71,11 +71,39 @@
 
 <body {{{ bodyattributes }}}>
 {{> core/local/toast/wrapper}}
-<div id="page-wrapper" class="d-print-block">
+<div id="page-wrapper" class="d-print-block {{#navlayoutsidebar}}theme-navlayout theme-navlayout-sidebar {{navsidebarlogoclass}}{{#navsidebarcollapsed}} theme-navsidebar-collapsed{{/navsidebarcollapsed}}{{/navlayoutsidebar}}{{#navlayoutmegamenu}}{{^megamenushownavbar}}theme-navlayout theme-navlayout-megamenu{{#megamenutriggerhidden}} theme-megamenu-triggerhidden{{/megamenutriggerhidden}}{{/megamenushownavbar}}{{/navlayoutmegamenu}} {{secondarynavposclass}}{{#secondarynavbelownavbaractive}} theme-secondarynav-belownavbar-active{{/secondarynavbelownavbaractive}}">
 
     {{{ output.standard_top_of_body_html }}}
 
-    {{> theme_boost/navbar }}
+    {{! Boost Union: switch the navigation chrome based on the configured navigation layout. }}
+    {{#navlayoutsidebar}}
+        {{> theme_boost_union/nav-sidebar }}
+    {{/navlayoutsidebar}}
+    {{#navlayoutmegamenu}}
+        {{#megamenushownavbar}}
+            {{> theme_boost/navbar }}
+        {{/megamenushownavbar}}
+        {{^megamenushownavbar}}
+            {{> theme_boost_union/megamenu-trigger }}
+            {{> theme_boost_union/megamenu }}
+        {{/megamenushownavbar}}
+    {{/navlayoutmegamenu}}
+    {{#navlayoutdefault}}
+        {{> theme_boost/navbar }}
+    {{/navlayoutdefault}}
+
+    {{! Secondary navigation 'below navbar' position: a full-width bar directly below the navbar, following the
+        navbar color setting. }}
+    {{#secondarynavbelownavbar}}
+        {{#secondarymoremenu}}
+            <nav class="secondary-navigation-belownavbar fixed-top d-print-none"
+                aria-label="{{#str}}secondarynavigationmenu, theme_boost_union{{/str}}">
+                <div class="secondary-navigation">
+                    {{> core/moremenu}}
+                </div>
+            </nav>
+        {{/secondarymoremenu}}
+    {{/secondarynavbelownavbar}}
     {{#courseindex}}
         {{< theme_boost/drawer }}
             {{$id}}theme_boost-drawers-courseindex{{/id}}
@@ -136,6 +164,20 @@
                 </div>
             </div>
         {{/userisediting}}
+
+        {{! Mega menu layout: while editing with the navbar shown, expose the mega menu block region inline so that
+            admins can add and arrange the blocks which will appear inside the mega menu overlay. }}
+        {{#navlayoutmegamenu}}
+            {{#megamenushownavbar}}
+                {{#regions.megamenu.hasblocks}}
+                    <section id="theme-block-region-megamenu-editing" class="theme-block-region my-3" aria-label="{{#str}}region-megamenu, theme_boost_union{{/str}}">
+                        <h4 class="h5">{{#str}}region-megamenu, theme_boost_union{{/str}}</h4>
+                        {{{ regions.megamenu.addblockbutton }}}
+                        {{{ regions.megamenu.regionhtml }}}
+                    </section>
+                {{/regions.megamenu.hasblocks}}
+            {{/megamenushownavbar}}
+        {{/navlayoutmegamenu}}
 
         {{#regions.outsidetop.hasblocks}}
             <section id="theme-block-region-outside-top" class="theme-block-region {{{outsidetopwidth}}}" aria-label="{{#str}}blocks{{/str}}">
@@ -200,11 +242,56 @@
             {{> theme_boost_union/infobannersabove }}
             {{{ output.full_header }}}
             {{> theme_boost_union/infobannersbelow }}
-            {{#secondarymoremenu}}
-                <div class="secondary-navigation d-print-none">
-                    {{> core/moremenu}}
-                </div>
-            {{/secondarymoremenu}}
+            {{! The secondary navigation is shown here unless it has been moved to a bar below the navbar. }}
+            {{^secondarynavbelownavbar}}
+                {{#secondarymoremenu}}
+                    {{#secondarynavactionmenu}}
+                        {{#istablist}}
+                            {{! A tablist secondary navigation (e.g. /admin/search.php) relies on tab switching and
+                                cannot be collapsed into a link dropdown, so it is shown as the normal tabs. }}
+                            <div class="secondary-navigation d-print-none">
+                                {{> core/moremenu}}
+                            </div>
+                        {{/istablist}}
+                        {{^istablist}}
+                        {{! Action menu position: the secondary navigation is collapsed behind a three-dot icon. }}
+                        <div class="secondary-navigation secondary-navigation-actionmenu dropdown d-print-none">
+                            <button type="button" class="btn secondary-navigation-actionmenu__toggle"
+                                data-bs-toggle="dropdown" aria-expanded="false"
+                                title="{{#str}}secondarynavigationmenu, theme_boost_union{{/str}}">
+                                <span class="visually-hidden">{{#str}}secondarynavigationmenu, theme_boost_union{{/str}}</span>
+                                <i class="fa-solid fa-ellipsis" aria-hidden="true"></i>
+                            </button>
+                            <div class="dropdown-menu">
+                                {{#nodecollection}}
+                                    {{#children}}
+                                        {{#divider}}<div class="dropdown-divider"></div>{{/divider}}
+                                        {{^divider}}
+                                            {{#haschildren}}
+                                                <h6 class="dropdown-header">{{{text}}}</h6>
+                                                {{#children}}
+                                                    {{^divider}}
+                                                        <a class="dropdown-item {{#isactive}}active{{/isactive}}" href="{{{url}}}{{{action}}}" {{#isactive}}aria-current="true"{{/isactive}}>{{{text}}}</a>
+                                                    {{/divider}}
+                                                {{/children}}
+                                            {{/haschildren}}
+                                            {{^haschildren}}
+                                                <a class="dropdown-item {{#isactive}}active{{/isactive}}" href="{{{url}}}{{{action}}}" {{#isactive}}aria-current="true"{{/isactive}}>{{{text}}}</a>
+                                            {{/haschildren}}
+                                        {{/divider}}
+                                    {{/children}}
+                                {{/nodecollection}}
+                            </div>
+                        </div>
+                        {{/istablist}}
+                    {{/secondarynavactionmenu}}
+                    {{^secondarynavactionmenu}}
+                        <div class="secondary-navigation d-print-none">
+                            {{> core/moremenu}}
+                        </div>
+                    {{/secondarynavactionmenu}}
+                {{/secondarymoremenu}}
+            {{/secondarynavbelownavbar}}
             {{{ output.course_content_header_notifications }}}
             {{#regions.contentupper.hasblocks}}
                 <section id="theme-block-region-content-upper" class="theme-block-region" aria-label="{{#str}}blocks{{/str}}">
@@ -320,10 +407,10 @@
 </html>
 {{#js}}
 M.util.js_pending('theme_boost/loader');
-require(['theme_boost/loader', 'theme_boost/drawer'{{#regions.offcanvas.hasblocks}},'theme_boost_union/offcanvas'{{/regions.offcanvas.hasblocks}}{{#includesmartmenu}}, 'theme_boost_union/smartmenu'{{/includesmartmenu}}{{#includestarredcacheinvalidation}}, 'theme_boost_union/smartmenu_starred_cacheinvalidation'{{/includestarredcacheinvalidation}}{{#blockregionsdata.includeblockregionsamd}}, 'theme_boost_union/blockregions'{{/blockregionsdata.includeblockregionsamd}}], function(Loader, Drawer{{#regions.offcanvas.hasblocks}},OffCanvas{{/regions.offcanvas.hasblocks}}{{#includesmartmenu}}, SmartMenu{{/includesmartmenu}}{{#includestarredcacheinvalidation}}, SmartMenuStarredCacheInvalidation{{/includestarredcacheinvalidation}}{{#blockregionsdata.includeblockregionsamd}}, BlockRegions{{/blockregionsdata.includeblockregionsamd}}) {
+require(['theme_boost/loader', 'theme_boost/drawer'{{#regions.offcanvas.hasblocks}},'theme_boost_union/offcanvas'{{/regions.offcanvas.hasblocks}}{{#includesmartmenu}}, 'theme_boost_union/smartmenu'{{/includesmartmenu}}{{#includestarredcacheinvalidation}}, 'theme_boost_union/smartmenu_starred_cacheinvalidation'{{/includestarredcacheinvalidation}}{{#blockregionsdata.includeblockregionsamd}}, 'theme_boost_union/blockregions'{{/blockregionsdata.includeblockregionsamd}}{{#navlayoutsidebar}}, 'theme_boost_union/navsidebar'{{/navlayoutsidebar}}{{#navlayoutmegamenu}}{{^megamenushownavbar}}, 'theme_boost_union/megamenu'{{/megamenushownavbar}}{{/navlayoutmegamenu}}{{#editingfocusmode}}, 'theme_boost_union/focusededit'{{/editingfocusmode}}], function(Loader, Drawer{{#regions.offcanvas.hasblocks}},OffCanvas{{/regions.offcanvas.hasblocks}}{{#includesmartmenu}}, SmartMenu{{/includesmartmenu}}{{#includestarredcacheinvalidation}}, SmartMenuStarredCacheInvalidation{{/includestarredcacheinvalidation}}{{#blockregionsdata.includeblockregionsamd}}, BlockRegions{{/blockregionsdata.includeblockregionsamd}}{{#navlayoutsidebar}}, NavSidebar{{/navlayoutsidebar}}{{#navlayoutmegamenu}}{{^megamenushownavbar}}, MegaMenu{{/megamenushownavbar}}{{/navlayoutmegamenu}}{{#editingfocusmode}}, FocusedEdit{{/editingfocusmode}}) {
     Drawer.init();
     M.util.js_complete('theme_boost/loader');
     {{! All init method calls are placed on one line to avoid a ESLint warning about too many empty lines, see Github issue #1107. }}
-    {{#regions.offcanvas.hasblocks}}OffCanvas.init();{{/regions.offcanvas.hasblocks}}{{#includesmartmenu}}SmartMenu.init();{{/includesmartmenu}}{{#includestarredcacheinvalidation}}SmartMenuStarredCacheInvalidation.init();{{/includestarredcacheinvalidation}}{{#blockregionsdata.outsideregions.verticaloffset}}BlockRegions.OutsideRegionsVerticalAlignment();{{/blockregionsdata.outsideregions.verticaloffset}}
+    {{#regions.offcanvas.hasblocks}}OffCanvas.init();{{/regions.offcanvas.hasblocks}}{{#includesmartmenu}}SmartMenu.init();{{/includesmartmenu}}{{#includestarredcacheinvalidation}}SmartMenuStarredCacheInvalidation.init();{{/includestarredcacheinvalidation}}{{#blockregionsdata.outsideregions.verticaloffset}}BlockRegions.OutsideRegionsVerticalAlignment();{{/blockregionsdata.outsideregions.verticaloffset}}{{#navlayoutsidebar}}NavSidebar.init();{{/navlayoutsidebar}}{{#navlayoutmegamenu}}{{^megamenushownavbar}}MegaMenu.init();{{/megamenushownavbar}}{{/navlayoutmegamenu}}{{#editingfocusmode}}FocusedEdit.init();{{/editingfocusmode}}
 });
 {{/js}}

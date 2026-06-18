@@ -1,0 +1,149 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_boost_union/nav-sidebar
+
+    This template renders the left navigation sidebar (the 'Left sidebar' navigation layout of Boost Union).
+
+    It reuses the primary navigation items (mobileprimarynav, enriched with an icon/monogram/index in
+    layout/includes/navlayout.php), the core user menu, the navbar plugin output (notifications and messaging)
+    and the language menu.
+
+    On desktop the sidebar is persistent and can be collapsed to an icon-only rail. On mobile it behaves as an
+    off-canvas overlay which is opened with the floating menu button and closed via the backdrop. The toggling
+    and the persistence of the collapsed state are handled by the theme_boost_union/navsidebar AMD module.
+
+    Context variables required for this template:
+    * sitename - The name of the site
+    * output - The core renderer for the page
+    * navsidebaritems - The enriched primary navigation items
+    * usermenu - The user menu data
+    * langmenu - The language menu data
+
+    Example context (json):
+    {
+        "sitename": "Moodle",
+        "navsidebaritems": [
+            { "text": "Dashboard", "url": "/my/", "isactive": true, "haschildren": false, "navicon": "fa-gauge-high", "navmonogram": "D", "navlabel": "Dashboard", "navindex": 0 }
+        ]
+    }
+}}
+<button type="button" id="theme_boost_union-navsidebar-mobiletoggle" class="bu-navsidebar__mobiletoggle btn d-print-none"
+    aria-controls="theme_boost_union-navsidebar" aria-expanded="false"
+    title="{{#str}}navigationsidebarmenu, theme_boost_union{{/str}}">
+    <span class="visually-hidden">{{#str}}navigationsidebarmenu, theme_boost_union{{/str}}</span>
+    <i class="fa-solid fa-bars" aria-hidden="true"></i>
+</button>
+<div class="bu-navsidebar__backdrop d-print-none" data-action="closenavsidebar" hidden></div>
+
+{{! The edit mode switch is pinned to the top right of the viewport so it stays accessible in every sidebar state.
+    The output is kept on a single line with no surrounding whitespace so the :empty CSS rule can hide the
+    backdrop when the current user has no edit switch (e.g. students). }}
+<div class="bu-navsidebar__editswitch d-print-none">{{{ output.edit_switch }}}</div>
+
+<nav id="theme_boost_union-navsidebar" class="bu-navsidebar d-print-none" aria-label="{{#str}}sitemenubar, admin{{/str}}">
+    <div class="bu-navsidebar__top">
+        <a href="{{#alternativelogolinkurl}}{{{alternativelogolinkurl}}}{{/alternativelogolinkurl}}{{^alternativelogolinkurl}}{{{ config.homeurl }}}{{/alternativelogolinkurl}}"
+            class="bu-navsidebar__brand" title="{{{ sitename }}}" data-region="site-home-link">
+            {{#navlogourl}}
+                <img src="{{navlogourl}}" class="bu-navsidebar__logo" alt="{{sitename}}">
+            {{/navlogourl}}
+            {{^navlogourl}}
+                <span class="bu-navsidebar__sitename">{{{ sitename }}}</span>
+            {{/navlogourl}}
+        </a>
+        <button type="button" id="theme_boost_union-navsidebar-toggle" class="bu-navsidebar__toggle btn icon-no-margin"
+            aria-controls="theme_boost_union-navsidebar" aria-expanded="true"
+            title="{{#str}}navigationsidebartoggle, theme_boost_union{{/str}}">
+            <span class="visually-hidden">{{#str}}navigationsidebartoggle, theme_boost_union{{/str}}</span>
+            <i class="fa-solid fa-angles-left bu-navsidebar__toggleicon" aria-hidden="true"></i>
+        </button>
+    </div>
+
+    <div class="bu-navsidebar__nav">
+        {{#navsidebaritems}}
+            {{#haschildren}}
+                <div class="bu-navsidebar__group {{#isactive}}active{{/isactive}}">
+                    <div class="bu-navsidebar__parentrow">
+                        <a href="{{#url}}{{{url}}}{{/url}}{{^url}}#{{/url}}"
+                            class="bu-navsidebar__item bu-navsidebar__item--parent {{#isactive}}active{{/isactive}}"
+                            title="{{navlabel}}">
+                            <span class="bu-navsidebar__icon" aria-hidden="true">
+                                {{#navitemicon}}{{{navitemicon}}}{{/navitemicon}}
+                                {{^navitemicon}}
+                                    {{#navicon}}<i class="fa-solid {{navicon}}"></i>{{/navicon}}
+                                    {{^navicon}}<span class="bu-navsidebar__monogram">{{navmonogram}}</span>{{/navicon}}
+                                {{/navitemicon}}
+                            </span>
+                            <span class="bu-navsidebar__label">{{navlabel}}</span>
+                        </a>
+                        <button type="button" class="bu-navsidebar__expand btn icon-no-margin {{^isopen}}collapsed{{/isopen}}"
+                            data-bs-toggle="collapse" data-bs-target="#bu-navsidebar-sub-{{navindex}}"
+                            aria-expanded="{{#isopen}}true{{/isopen}}{{^isopen}}false{{/isopen}}"
+                            aria-controls="bu-navsidebar-sub-{{navindex}}">
+                            <span class="visually-hidden">{{navlabel}}</span>
+                            <i class="fa-solid fa-chevron-down bu-navsidebar__caret" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                    <ul class="bu-navsidebar__sub list-unstyled collapse {{#isopen}}show{{/isopen}}" id="bu-navsidebar-sub-{{navindex}}">
+                        {{#children}}
+                            {{^divider}}
+                                <li>
+                                    <a href="{{{url}}}" class="bu-navsidebar__subitem {{#isactive}}active{{/isactive}}"
+                                        {{#isactive}}aria-current="true"{{/isactive}}>
+                                        {{{text}}}
+                                    </a>
+                                </li>
+                            {{/divider}}
+                        {{/children}}
+                    </ul>
+                </div>
+            {{/haschildren}}
+            {{^haschildren}}
+                <a href="{{{url}}}"
+                    class="bu-navsidebar__item {{#isactive}}active{{/isactive}}"
+                    {{#isactive}}aria-current="true"{{/isactive}} title="{{navlabel}}"
+                    {{#attributes}}{{#name}}{{name}}="{{value}}"{{/name}} {{/attributes}}>
+                    <span class="bu-navsidebar__icon" aria-hidden="true">
+                        {{#navitemicon}}{{{navitemicon}}}{{/navitemicon}}
+                        {{^navitemicon}}
+                            {{#navicon}}<i class="fa-solid {{navicon}}"></i>{{/navicon}}
+                            {{^navicon}}<span class="bu-navsidebar__monogram">{{navmonogram}}</span>{{/navicon}}
+                        {{/navitemicon}}
+                    </span>
+                    <span class="bu-navsidebar__label">{{navlabel}}</span>
+                </a>
+            {{/haschildren}}
+        {{/navsidebaritems}}
+    </div>
+
+    <div class="bu-navsidebar__bottom">
+        <div class="bu-navsidebar__tools" data-region="navsidebar-tools">
+            {{{ output.navbar_plugin_output }}}
+        </div>
+        <div class="bu-navsidebar__user usermenu-container" data-region="usermenu">
+            {{#usermenu}}
+                {{> core/user_menu }}
+            {{/usermenu}}
+        </div>
+        {{#langmenu}}
+            <div class="bu-navsidebar__lang">
+                {{> theme_boost/language_menu }}
+            </div>
+        {{/langmenu}}
+    </div>
+</nav>

@@ -181,6 +181,38 @@ define('THEME_BOOST_UNION_SETTING_NAVBARCOLOR_DARK', 'dark');
 define('THEME_BOOST_UNION_SETTING_NAVBARCOLOR_COLOREDLIGHT', 'coloredlight');
 define('THEME_BOOST_UNION_SETTING_NAVBARCOLOR_COLOREDDARK', 'coloreddark');
 
+// Constants for the navigation layout setting (which navigation chrome is used theme-wide).
+define('THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_DEFAULT', 'default');
+define('THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_SIDEBAR', 'sidebar');
+define('THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_MEGAMENU', 'megamenu');
+
+// Constants for the navigation sidebar default state setting.
+define('THEME_BOOST_UNION_SETTING_SIDEBARSTATE_EXPANDED', 'expanded');
+define('THEME_BOOST_UNION_SETTING_SIDEBARSTATE_COLLAPSED', 'collapsed');
+
+// Constants for the mega menu trigger visibility setting.
+define('THEME_BOOST_UNION_SETTING_MEGAMENUTRIGGER_COMBO', 'combo');
+define('THEME_BOOST_UNION_SETTING_MEGAMENUTRIGGER_HIDDEN', 'hidden');
+
+// Constants for the navigation sidebar logo visibility setting.
+define('THEME_BOOST_UNION_SETTING_SIDEBARLOGO_BOTH', 'both');
+define('THEME_BOOST_UNION_SETTING_SIDEBARLOGO_DESKTOP', 'desktop');
+define('THEME_BOOST_UNION_SETTING_SIDEBARLOGO_MOBILE', 'mobile');
+define('THEME_BOOST_UNION_SETTING_SIDEBARLOGO_NONE', 'none');
+
+// Constants for the navigation logo type setting (used by the left sidebar and the mega menu).
+define('THEME_BOOST_UNION_SETTING_NAVLOGO_COMPACT', 'compact');
+define('THEME_BOOST_UNION_SETTING_NAVLOGO_FULL', 'full');
+
+// Constants for the secondary navigation position setting.
+define('THEME_BOOST_UNION_SETTING_SECONDARYNAV_DEFAULT', 'default');
+define('THEME_BOOST_UNION_SETTING_SECONDARYNAV_BELOWNAVBAR', 'belownavbar');
+define('THEME_BOOST_UNION_SETTING_SECONDARYNAV_ACTIONMENU', 'actionmenu');
+
+// Constants for the bottom bar display setting.
+define('THEME_BOOST_UNION_SETTING_BOTTOMBAR_MOBILE', 'mobile');
+define('THEME_BOOST_UNION_SETTING_BOTTOMBAR_ALL', 'all');
+
 define('THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSPLACEMENT_NEXTMAINCONTENT', 'nextmaincontent');
 define('THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSPLACEMENT_NEARWINDOW', 'nearwindowedges');
 define('THEME_BOOST_UNION_SETTING_OUTSIDEREGIONSWITH_FULLWIDTH', 'fullwidth');
@@ -689,6 +721,26 @@ SCSS;
         $blockregionoutsiderightwidth = '300px';
     }
     $scss .= '$bu-blockregionoutsiderightwidth: ' . $blockregionoutsiderightwidth . ";\n";
+
+    // Set custom Boost Union SCSS variable: The navigation sidebar width (used by the 'Left sidebar' navigation layout).
+    $navigationsidebarwidth = get_config('theme_boost_union', 'navigationsidebarwidth');
+    // If the setting is not set.
+    if (!$navigationsidebarwidth) {
+        // Set the variable to the default setting to make sure that the SCSS variable does not remain uninitialized.
+        $navigationsidebarwidth = '264px';
+    }
+    $scss .= '$bu-navigationsidebarwidth: ' . $navigationsidebarwidth . ";\n";
+
+    // Set custom Boost Union SCSS variable: The mega menu overlay background color (used by the 'Mega menu' layout).
+    // If the dedicated setting is empty, fall back to the brand color and, if that is empty too, to a dark default.
+    $navigationmegamenubackground = get_config('theme_boost_union', 'navigationmegamenubackground');
+    if (!$navigationmegamenubackground) {
+        $navigationmegamenubackground = get_config('theme_boost_union', 'brandcolor');
+    }
+    if (!$navigationmegamenubackground) {
+        $navigationmegamenubackground = '#0c2740';
+    }
+    $scss .= '$bu-megamenu-bg: ' . $navigationmegamenubackground . ";\n";
 
     // Add custom Boost Union SCSS variable as goody for designers: $themerev.
     $scss .= '$themerev: ' . $CFG->themerev . ";\n";

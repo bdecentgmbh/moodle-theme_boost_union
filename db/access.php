@@ -348,6 +348,28 @@ $capabilities = [
             'manager' => CAP_ALLOW,
         ],
     ],
+    // Ability to see the mega menu block region.
+    'theme/boost_union:viewregionmegamenu' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => [
+            'user' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+            'guest' => CAP_ALLOW,
+        ],
+    ],
+    // Ability to edit the mega menu block region.
+    'theme/boost_union:editregionmegamenu' => [
+        'captype' => 'write',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => [
+            'teacher' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'manager' => CAP_ALLOW,
+        ],
+    ],
     // Ability to override the course header settings in a course.
     'theme/boost_union:overridecourseheaderincourse' => [
         'captype' => 'write',

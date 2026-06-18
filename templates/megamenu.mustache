@@ -1,0 +1,143 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_boost_union/megamenu
+
+    This template renders the fullscreen mega menu overlay (the 'Mega menu' navigation layout of Boost Union).
+
+    It merges the primary navigation (rendered as cards), the notifications/messaging, the user menu and the
+    language menu, and it exposes a dedicated block region (regions.megamenu) into which admins can place blocks
+    (for example Dash blocks). The opening/closing, focus trap and keyboard handling are provided by the
+    theme_boost_union/megamenu AMD module.
+
+    Context variables required for this template:
+    * sitename - The name of the site
+    * output - The core renderer for the page
+    * navsidebaritems - The enriched primary navigation items
+    * regions - The block regions data (uses regions.megamenu)
+    * usermenu - The user menu data
+    * langmenu - The language menu data
+
+    Example context (json):
+    {
+        "sitename": "Moodle",
+        "navsidebaritems": [
+            { "url": "/my/", "navlabel": "Dashboard", "navicon": "fa-gauge-high", "navmonogram": "D", "haschildren": false }
+        ]
+    }
+}}
+<div id="theme_boost_union-megamenu" class="bu-megamenu d-print-none" role="dialog" aria-modal="true"
+    aria-label="{{#str}}megamenuheading, theme_boost_union{{/str}}" hidden>
+    <div class="bu-megamenu__bar">
+        <a href="{{#alternativelogolinkurl}}{{{alternativelogolinkurl}}}{{/alternativelogolinkurl}}{{^alternativelogolinkurl}}{{{ config.homeurl }}}{{/alternativelogolinkurl}}"
+            class="bu-megamenu__brand" title="{{{ sitename }}}">
+            {{#navlogourl}}
+                <img src="{{navlogourl}}" class="bu-megamenu__logo" alt="{{sitename}}">
+            {{/navlogourl}}
+            {{^navlogourl}}
+                <span class="bu-megamenu__sitename">{{{ sitename }}}</span>
+            {{/navlogourl}}
+        </a>
+        {{! The notifications/messaging, the user menu and the language menu live in the slim top bar (above the menu
+            cards) so the user menu opens downward with enough room instead of being cut off at the bottom. }}
+        <div class="bu-megamenu__baractions">
+            <div class="bu-megamenu__tools" data-region="megamenu-tools">
+                {{{ output.navbar_plugin_output }}}
+            </div>
+            <div class="bu-megamenu__user usermenu-container" data-region="usermenu">
+                {{#usermenu}}
+                    {{> core/user_menu }}
+                {{/usermenu}}
+            </div>
+            {{#langmenu}}
+                <div class="bu-megamenu__lang">
+                    {{> theme_boost/language_menu }}
+                </div>
+            {{/langmenu}}
+            <button type="button" id="theme_boost_union-megamenu-close" class="bu-megamenu__close btn"
+                title="{{#str}}megamenuclose, theme_boost_union{{/str}}">
+                <span class="visually-hidden">{{#str}}megamenuclose, theme_boost_union{{/str}}</span>
+                <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="bu-megamenu__body">
+        {{#navsidebaritems.0}}
+            <nav class="bu-megamenu__grid" aria-label="{{#str}}megamenuheading, theme_boost_union{{/str}}">
+                {{#navsidebaritems}}
+                    {{! Smart menus configured as a card menu are shown as a full-width section of image cards. }}
+                    {{#card}}
+                        <section class="bu-megamenu__cardmenu">
+                            <h3 class="bu-megamenu__cardmenutitle">{{{text}}}</h3>
+                            <div class="bu-megamenu__cardgrid">
+                                {{#children}}
+                                    {{^divider}}
+                                        <a class="bu-megamenu__imgcard" href="{{{url}}}{{{action}}}"
+                                            {{#isactive}}aria-current="true"{{/isactive}}>
+                                            {{#itemimage}}
+                                                <span class="bu-megamenu__imgcardimg"
+                                                    style="background-image: url('{{{itemimage}}}');"
+                                                    role="img" aria-label="{{imagealt}}"></span>
+                                            {{/itemimage}}
+                                            <span class="bu-megamenu__imgcardlabel">{{{text}}}</span>
+                                        </a>
+                                    {{/divider}}
+                                {{/children}}
+                            </div>
+                        </section>
+                    {{/card}}
+                    {{! All other items (core navigation and list smart menus) are shown as a simple card. }}
+                    {{^card}}
+                        <div class="bu-megamenu__card">
+                            <a class="bu-megamenu__cardhead" href="{{#url}}{{{url}}}{{/url}}{{^url}}#{{/url}}"
+                                {{#isactive}}aria-current="true"{{/isactive}}>
+                                <span class="bu-megamenu__cardicon" aria-hidden="true">
+                                    {{#navitemicon}}{{{navitemicon}}}{{/navitemicon}}
+                                    {{^navitemicon}}
+                                        {{#navicon}}<i class="fa-solid {{navicon}}"></i>{{/navicon}}
+                                        {{^navicon}}<span class="bu-megamenu__monogram">{{navmonogram}}</span>{{/navicon}}
+                                    {{/navitemicon}}
+                                </span>
+                                <span class="bu-megamenu__cardlabel">{{navlabel}}</span>
+                            </a>
+                            {{#haschildren}}
+                                <ul class="bu-megamenu__cardlinks list-unstyled">
+                                    {{#children}}
+                                        {{^divider}}
+                                            <li>
+                                                <a href="{{{url}}}" {{#isactive}}aria-current="true"{{/isactive}}>{{{text}}}</a>
+                                            </li>
+                                        {{/divider}}
+                                    {{/children}}
+                                </ul>
+                            {{/haschildren}}
+                        </div>
+                    {{/card}}
+                {{/navsidebaritems}}
+            </nav>
+        {{/navsidebaritems.0}}
+
+        {{#regions.megamenu.hasblocks}}
+            <section id="theme-block-region-megamenu" class="bu-megamenu__blocks theme-block-region"
+                aria-label="{{#str}}blocks{{/str}}">
+                {{{ regions.megamenu.addblockbutton }}}
+                {{{ regions.megamenu.regionhtml }}}
+            </section>
+        {{/regions.megamenu.hasblocks}}
+    </div>
+</div>

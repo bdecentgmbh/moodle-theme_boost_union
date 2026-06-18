@@ -1508,6 +1508,91 @@ function theme_boost_union_set_mobilecss_url() {
 }
 
 /**
+ * Returns the configured theme-wide navigation layout.
+ *
+ * This central helper resolves the 'navigationlayout' admin setting to one of the supported
+ * navigation layout constants, falling back to the default (top navbar) layout if the setting
+ * is empty or holds an unknown value. Use this everywhere the active navigation layout needs to
+ * be known (layout includes, renderers, templates context) so the fallback logic stays in one place.
+ *
+ * @return string One of the THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_* values.
+ */
+function theme_boost_union_get_navigationlayout() {
+    // During the initial installation, the config table is not available yet, so use the default layout.
+    if (during_initial_install()) {
+        return THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_DEFAULT;
+    }
+
+    // Get the configured navigation layout.
+    $layout = get_config('theme_boost_union', 'navigationlayout');
+
+    // Compose the list of supported navigation layouts.
+    $supported = [
+            THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_DEFAULT,
+            THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_SIDEBAR,
+            THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_MEGAMENU,
+    ];
+
+    // If the setting is empty or holds an unsupported value, fall back to the default layout.
+    if (empty($layout) || !in_array($layout, $supported, true)) {
+        return THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_DEFAULT;
+    }
+
+    // Return the configured layout.
+    return $layout;
+}
+
+/**
+ * Returns a best-effort Font Awesome icon class for a primary navigation item in the left sidebar layout.
+ *
+ * Moodle's core primary navigation nodes do not carry icons, but the left sidebar layout (especially its
+ * collapsed icon-rail state) benefits from an icon per item. This helper maps the well-known core navigation
+ * destinations to sensible Font Awesome icons based on their URL. Items which cannot be mapped return an empty
+ * string; callers should then fall back to a text monogram. Sites which need full control over the sidebar
+ * icons should use Boost Union's smart menus, whose items can carry their own icons.
+ *
+ * @param string $url The navigation item URL (absolute or relative).
+ * @return string A Font Awesome icon class (e.g. 'fa-house'), or an empty string if no icon could be mapped.
+ */
+function theme_boost_union_get_navsidebar_icon($url) {
+    // Without a URL we cannot map an icon.
+    if (empty($url)) {
+        return '';
+    }
+
+    // Reduce the URL to its path component so that the mapping is independent of the wwwroot and the query string.
+    $path = parse_url((string) $url, PHP_URL_PATH);
+    $path = (!empty($path)) ? rtrim($path, '/') : '';
+
+    // Map the well-known core navigation destinations to Font Awesome icons.
+    // The order matters: more specific paths must be listed before more generic ones.
+    $map = [
+            '/my/courses' => 'fa-graduation-cap',
+            '/my' => 'fa-gauge-high',
+            '/course' => 'fa-layer-group',
+            '/calendar' => 'fa-calendar-days',
+            '/grade' => 'fa-table-list',
+            '/badges' => 'fa-certificate',
+            '/message' => 'fa-comment-dots',
+            '/admin' => 'fa-screwdriver-wrench',
+    ];
+    foreach ($map as $needle => $icon) {
+        // Match the exact path, any path below it (followed by a slash) or a script at that path (e.g. /my/courses.php).
+        if ($path === $needle || str_starts_with($path, $needle . '/') || str_starts_with($path, $needle . '.')) {
+            return $icon;
+        }
+    }
+
+    // The site home is the empty path (i.e. the wwwroot root) or an explicit index.php.
+    if ($path === '' || $path === '/index.php') {
+        return 'fa-house';
+    }
+
+    // No icon could be mapped; the caller should fall back to a monogram.
+    return '';
+}
+
+/**
  * Returns an array of the defined additional block regions.
  *
  * @param array $pageregions List of page regions.
@@ -1528,6 +1613,7 @@ function theme_boost_union_get_additional_regions($pageregions = []) {
             'contentupper' => 'content-upper',
             'contentlower' => 'content-lower',
             'header' => 'header',
+            'megamenu' => 'megamenu',
     ];
 
     return ($pageregions) ? array_intersect($regions, $pageregions) : $regions;
@@ -1558,6 +1644,16 @@ function theme_boost_union_get_block_regions($layout) {
 
     // Add the configured regions to the side-pre region (which is always provided by Boost core).
     $regions = array_merge(['side-pre'], $settings);
+
+    // When the mega menu navigation layout is active, make its dedicated block region available on every layout so
+    // that admins can place blocks (e.g. Dash blocks) into the mega menu overlay.
+    // We intentionally use the literal 'megamenu' value here instead of the
+    // THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_MEGAMENU constant, as the theme's lib.php
+    // is not loaded at this early stage of the bootstrap.
+    $navigationlayout = get_config('theme_boost_union', 'navigationlayout');
+    if ($navigationlayout === 'megamenu' && !in_array('megamenu', $regions)) {
+        $regions[] = 'megamenu';
+    }
 
     // If the harden block regions feature is enabled, delegate hardening to the custom block manager implementation.
     // We intentionally use the literal 'yes' value here instead of the

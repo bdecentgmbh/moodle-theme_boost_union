@@ -47,12 +47,27 @@
             <div class="card-block-wrapper">
                 {{#children}}
                     {{^divider}}
-                        <div class="card-block {{#itemdata.classes}} {{.}} {{/itemdata.classes}} ">
+                        <div class="card-block {{#itemdata.classes}} {{.}} {{/itemdata.classes}} {{^hasrealimage}}{{#cardicon}}card-block-iconfallback{{/cardicon}}{{/hasrealimage}}">
                             <a href="{{{url}}}{{{action}}}">
                                 <span class="card-item-overlay"></span>
                             </a>
                             <div class="img-block">
-                                <a href="{{{url}}}{{{action}}}"><img src="{{{itemimage}}}" alt="{{{imagealt}}}" role="presentation"></a>
+                                {{! If the item has a real (uploaded or course) image, show it. Otherwise fall back to
+                                    the item icon, and only if there is no icon either to the generated placeholder
+                                    image. The alt is escaped, as it may contain the item title including icon markup. }}
+                                {{#hasrealimage}}
+                                    <a href="{{{url}}}{{{action}}}"><img src="{{{itemimage}}}" alt="{{imagealt}}" role="presentation"></a>
+                                {{/hasrealimage}}
+                                {{^hasrealimage}}
+                                    {{#cardicon}}
+                                        {{! A span (not an <a>) so it is not affected by the generic '.img-block > a'
+                                            rule; the whole card is already clickable via the card overlay link. }}
+                                        <span class="card-icon-link" role="img" aria-label="{{imagealt}}">{{{cardicon}}}</span>
+                                    {{/cardicon}}
+                                    {{^cardicon}}
+                                        <a href="{{{url}}}{{{action}}}"><img src="{{{itemimage}}}" alt="{{imagealt}}" role="presentation"></a>
+                                    {{/cardicon}}
+                                {{/hasrealimage}}
                             </div>
                             <div class="content-block"
                                 style="{{#itemdata.backgroundcolor}}background-color:{{{itemdata.backgroundcolor}}};{{/itemdata.backgroundcolor}}">

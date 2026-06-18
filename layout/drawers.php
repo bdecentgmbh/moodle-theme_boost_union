@@ -137,6 +137,20 @@ if (isset($primarymenu['includesmartmenu']) && $primarymenu['includesmartmenu'] 
 
 if (!empty($primarymenu['bottombar']) && !empty($primarymenu['bottombar']['drawer']) && !empty($primarymenu['includesmartmenu'])) {
     $extraclasses[] = 'theme-boost-union-bottombar';
+
+    // If the bottom bar is configured to be shown on all viewports, add a body class so that it is also displayed
+    // on tablet and desktop, where it is styled as a centered floating dock.
+    if (get_config('theme_boost_union', 'bottombardisplay') === THEME_BOOST_UNION_SETTING_BOTTOMBAR_ALL) {
+        $extraclasses[] = 'theme-bottombar-all';
+    }
+}
+
+// Focused editing mode: when editing and the feature is enabled, start in the focused state (empty block regions
+// and 'Add block' buttons hidden) by adding a body class. The per-user toggle (focusededit AMD) can override it.
+$editingfocus = ($PAGE->user_is_editing()
+        && get_config('theme_boost_union', 'editingfocusmode') === THEME_BOOST_UNION_SETTING_SELECT_YES);
+if ($editingfocus) {
+    $extraclasses[] = 'theme-editing-focused';
 }
 
 // Include the extra classes for the course index modification.
@@ -164,6 +178,8 @@ $templatecontext = [
     'primarymoremenu' => $primarymenu['moremenu'],
     'secondarymoremenu' => $secondarynavigation ?: false,
     'mobileprimarynav' => $primarymenu['mobileprimarynav'],
+    'mainmobileprimarynav' => $primarymenu['mainmobileprimarynav'] ?? $primarymenu['mobileprimarynav'],
+    'editingfocusmode' => $editingfocus,
     'usermenu' => $primarymenu['user'],
     'langmenu' => $primarymenu['lang'],
     'forceblockdraweropen' => $forceblockdraweropen,
@@ -222,6 +238,9 @@ if ($PAGE->pagelayout == 'frontpage') {
 
 // Include the template content for the smart menus.
 require_once(__DIR__ . '/includes/smartmenus.php');
+
+// Include the template content for the navigation layout (default navbar, left sidebar or mega menu).
+require_once(__DIR__ . '/includes/navlayout.php');
 
 // If we are on MWP.
 if (\theme_boost_union\local\mwp::extension_present() == true) {

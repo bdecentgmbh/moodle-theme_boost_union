@@ -3724,6 +3724,251 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
             get_string('navigationtab', 'theme_boost_union', null, true)
         );
 
+        // Heading: Navigation layout.
+        $name = 'theme_boost_union/navigationlayoutheading';
+        $title = get_string('navigationlayoutheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Navigation layout.
+        $name = 'theme_boost_union/navigationlayout';
+        $title = get_string('navigationlayoutsetting', 'theme_boost_union', null, true);
+        $description = get_string('navigationlayoutsetting_desc', 'theme_boost_union', null, true);
+        $navigationlayoutoptions = [
+                THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_DEFAULT =>
+                        get_string('navigationlayoutdefault', 'theme_boost_union', null, true),
+                THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_SIDEBAR =>
+                        get_string('navigationlayoutsidebar', 'theme_boost_union', null, true),
+                THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_MEGAMENU =>
+                        get_string('navigationlayoutmegamenu', 'theme_boost_union', null, true),
+        ];
+        $setting = new admin_setting_configselect(
+            $name,
+            $title,
+            $description,
+            THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_DEFAULT,
+            $navigationlayoutoptions
+        );
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Setting: Navigation sidebar default state.
+        $name = 'theme_boost_union/navigationsidebardefaultstate';
+        $title = get_string('navigationsidebardefaultstatesetting', 'theme_boost_union', null, true);
+        $description = get_string('navigationsidebardefaultstatesetting_desc', 'theme_boost_union', null, true);
+        $sidebarstateoptions = [
+                THEME_BOOST_UNION_SETTING_SIDEBARSTATE_EXPANDED =>
+                        get_string('navigationsidebarstateexpanded', 'theme_boost_union', null, true),
+                THEME_BOOST_UNION_SETTING_SIDEBARSTATE_COLLAPSED =>
+                        get_string('navigationsidebarstatecollapsed', 'theme_boost_union', null, true),
+        ];
+        $setting = new admin_setting_configselect(
+            $name,
+            $title,
+            $description,
+            THEME_BOOST_UNION_SETTING_SIDEBARSTATE_EXPANDED,
+            $sidebarstateoptions
+        );
+        $tab->add($setting);
+        $page->hide_if(
+            'theme_boost_union/navigationsidebardefaultstate',
+            'theme_boost_union/navigationlayout',
+            'neq',
+            THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_SIDEBAR
+        );
+
+        // Setting: Navigation sidebar width.
+        $name = 'theme_boost_union/navigationsidebarwidth';
+        $title = get_string('navigationsidebarwidthsetting', 'theme_boost_union', null, true);
+        $description = get_string('navigationsidebarwidthsetting_desc', 'theme_boost_union', null, true);
+        $default = '264px';
+        $setting = new admin_setting_configtext($name, $title, $description, $default, $widthregex, 6);
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+        $page->hide_if(
+            'theme_boost_union/navigationsidebarwidth',
+            'theme_boost_union/navigationlayout',
+            'neq',
+            THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_SIDEBAR
+        );
+
+        // Setting: Navigation sidebar logo visibility.
+        $name = 'theme_boost_union/navigationsidebarlogo';
+        $title = get_string('navigationsidebarlogosetting', 'theme_boost_union', null, true);
+        $description = get_string('navigationsidebarlogosetting_desc', 'theme_boost_union', null, true);
+        $sidebarlogooptions = [
+                THEME_BOOST_UNION_SETTING_SIDEBARLOGO_BOTH =>
+                        get_string('navigationsidebarlogoboth', 'theme_boost_union', null, true),
+                THEME_BOOST_UNION_SETTING_SIDEBARLOGO_DESKTOP =>
+                        get_string('navigationsidebarlogodesktop', 'theme_boost_union', null, true),
+                THEME_BOOST_UNION_SETTING_SIDEBARLOGO_MOBILE =>
+                        get_string('navigationsidebarlogomobile', 'theme_boost_union', null, true),
+                THEME_BOOST_UNION_SETTING_SIDEBARLOGO_NONE =>
+                        get_string('navigationsidebarlogonone', 'theme_boost_union', null, true),
+        ];
+        $setting = new admin_setting_configselect(
+            $name,
+            $title,
+            $description,
+            THEME_BOOST_UNION_SETTING_SIDEBARLOGO_BOTH,
+            $sidebarlogooptions
+        );
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+        $page->hide_if(
+            'theme_boost_union/navigationsidebarlogo',
+            'theme_boost_union/navigationlayout',
+            'neq',
+            THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_SIDEBAR
+        );
+
+        // Setting: Navigation logo type (used by the left sidebar and the mega menu).
+        $name = 'theme_boost_union/navigationlogotype';
+        $title = get_string('navigationlogotypesetting', 'theme_boost_union', null, true);
+        $description = get_string('navigationlogotypesetting_desc', 'theme_boost_union', null, true);
+        $navigationlogotypeoptions = [
+                THEME_BOOST_UNION_SETTING_NAVLOGO_COMPACT =>
+                        get_string('navigationlogotypecompact', 'theme_boost_union', null, true),
+                THEME_BOOST_UNION_SETTING_NAVLOGO_FULL =>
+                        get_string('navigationlogotypefull', 'theme_boost_union', null, true),
+        ];
+        $setting = new admin_setting_configselect(
+            $name,
+            $title,
+            $description,
+            THEME_BOOST_UNION_SETTING_NAVLOGO_COMPACT,
+            $navigationlogotypeoptions
+        );
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+        $page->hide_if(
+            'theme_boost_union/navigationlogotype',
+            'theme_boost_union/navigationlayout',
+            'eq',
+            THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_DEFAULT
+        );
+
+        // Setting: Expand the collapsed sidebar on hover.
+        $name = 'theme_boost_union/navigationsidebarexpandonhover';
+        $title = get_string('navigationsidebarexpandonhoversetting', 'theme_boost_union', null, true);
+        $description = get_string('navigationsidebarexpandonhoversetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect(
+            $name,
+            $title,
+            $description,
+            THEME_BOOST_UNION_SETTING_SELECT_NO,
+            $yesnooption
+        );
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+        $page->hide_if(
+            'theme_boost_union/navigationsidebarexpandonhover',
+            'theme_boost_union/navigationlayout',
+            'neq',
+            THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_SIDEBAR
+        );
+
+        // Setting: Mega menu trigger visibility.
+        $name = 'theme_boost_union/navigationmegamenutrigger';
+        $title = get_string('navigationmegamenutriggersetting', 'theme_boost_union', null, true);
+        $description = get_string('navigationmegamenutriggersetting_desc', 'theme_boost_union', null, true);
+        $megamenutriggeroptions = [
+                THEME_BOOST_UNION_SETTING_MEGAMENUTRIGGER_COMBO =>
+                        get_string('navigationmegamenutriggercombo', 'theme_boost_union', null, true),
+                THEME_BOOST_UNION_SETTING_MEGAMENUTRIGGER_HIDDEN =>
+                        get_string('navigationmegamenutriggerhidden', 'theme_boost_union', null, true),
+        ];
+        $setting = new admin_setting_configselect(
+            $name,
+            $title,
+            $description,
+            THEME_BOOST_UNION_SETTING_MEGAMENUTRIGGER_COMBO,
+            $megamenutriggeroptions
+        );
+        $tab->add($setting);
+        $page->hide_if(
+            'theme_boost_union/navigationmegamenutrigger',
+            'theme_boost_union/navigationlayout',
+            'neq',
+            THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_MEGAMENU
+        );
+
+        // Setting: Show the default navbar while editing (mega menu layout only).
+        $name = 'theme_boost_union/navigationmegamenushowwhenediting';
+        $title = get_string('navigationmegamenushowwheneditingsetting', 'theme_boost_union', null, true);
+        $description = get_string('navigationmegamenushowwheneditingsetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect(
+            $name,
+            $title,
+            $description,
+            THEME_BOOST_UNION_SETTING_SELECT_YES,
+            $yesnooption
+        );
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+        $page->hide_if(
+            'theme_boost_union/navigationmegamenushowwhenediting',
+            'theme_boost_union/navigationlayout',
+            'neq',
+            THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_MEGAMENU
+        );
+
+        // Setting: Mega menu background color.
+        $name = 'theme_boost_union/navigationmegamenubackground';
+        $title = get_string('navigationmegamenubackgroundsetting', 'theme_boost_union', null, true);
+        $description = get_string('navigationmegamenubackgroundsetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configcolourpicker($name, $title, $description, '');
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+        $page->hide_if(
+            'theme_boost_union/navigationmegamenubackground',
+            'theme_boost_union/navigationlayout',
+            'neq',
+            THEME_BOOST_UNION_SETTING_NAVIGATIONLAYOUT_MEGAMENU
+        );
+
+        // Setting: Secondary navigation position.
+        $name = 'theme_boost_union/secondarynavigationposition';
+        $title = get_string('secondarynavigationpositionsetting', 'theme_boost_union', null, true);
+        $description = get_string('secondarynavigationpositionsetting_desc', 'theme_boost_union', null, true);
+        $secondarynavpositionoptions = [
+                THEME_BOOST_UNION_SETTING_SECONDARYNAV_DEFAULT =>
+                        get_string('secondarynavigationpositiondefault', 'theme_boost_union', null, true),
+                THEME_BOOST_UNION_SETTING_SECONDARYNAV_BELOWNAVBAR =>
+                        get_string('secondarynavigationpositionbelownavbar', 'theme_boost_union', null, true),
+                THEME_BOOST_UNION_SETTING_SECONDARYNAV_ACTIONMENU =>
+                        get_string('secondarynavigationpositionactionmenu', 'theme_boost_union', null, true),
+        ];
+        $setting = new admin_setting_configselect(
+            $name,
+            $title,
+            $description,
+            THEME_BOOST_UNION_SETTING_SECONDARYNAV_DEFAULT,
+            $secondarynavpositionoptions
+        );
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
+        // Setting: Bottom bar display.
+        $name = 'theme_boost_union/bottombardisplay';
+        $title = get_string('bottombardisplaysetting', 'theme_boost_union', null, true);
+        $description = get_string('bottombardisplaysetting_desc', 'theme_boost_union', null, true);
+        $bottombardisplayoptions = [
+                THEME_BOOST_UNION_SETTING_BOTTOMBAR_MOBILE =>
+                        get_string('bottombardisplaymobile', 'theme_boost_union', null, true),
+                THEME_BOOST_UNION_SETTING_BOTTOMBAR_ALL =>
+                        get_string('bottombardisplayall', 'theme_boost_union', null, true),
+        ];
+        $setting = new admin_setting_configselect(
+            $name,
+            $title,
+            $description,
+            THEME_BOOST_UNION_SETTING_BOTTOMBAR_MOBILE,
+            $bottombardisplayoptions
+        );
+        $setting->set_updatedcallback('theme_reset_all_caches');
+        $tab->add($setting);
+
         // Heading: Primary navigation.
         $name = 'theme_boost_union/primarynavigationheading';
         $title = get_string('primarynavigationheading', 'theme_boost_union', null, true);
@@ -5848,6 +6093,26 @@ if ($hassiteconfig || has_capability('theme/boost_union:configure', context_syst
             true
         );
         $setting = new admin_setting_configselect($name, $title, $description, THEME_BOOST_UNION_SETTING_SELECT_NO, $yesnooption);
+        $tab->add($setting);
+
+        // Heading: Editing.
+        $name = 'theme_boost_union/editingheading';
+        $title = get_string('editingheading', 'theme_boost_union', null, true);
+        $setting = new admin_setting_heading($name, $title, null);
+        $tab->add($setting);
+
+        // Setting: Focused editing mode.
+        $name = 'theme_boost_union/editingfocusmode';
+        $title = get_string('editingfocusmodesetting', 'theme_boost_union', null, true);
+        $description = get_string('editingfocusmodesetting_desc', 'theme_boost_union', null, true);
+        $setting = new admin_setting_configselect(
+            $name,
+            $title,
+            $description,
+            THEME_BOOST_UNION_SETTING_SELECT_YES,
+            $yesnooption
+        );
+        $setting->set_updatedcallback('theme_reset_all_caches');
         $tab->add($setting);
 
         // Add tab to settings page.

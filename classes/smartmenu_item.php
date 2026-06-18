@@ -1819,16 +1819,35 @@ class smartmenu_item {
 
         // Update the card type menus before create node.
         if ($this->menu->type == smartmenu::TYPE_CARD) {
-            // Generate dynamic image for empty image cards.
+            // Determine whether the item has a real image: either an explicitly provided one (e.g. a course image
+            // for dynamic items) or an uploaded card image. If it has neither, the card shows the item icon (if
+            // configured) instead of a meaningless generated placeholder.
+            $fs = get_file_storage();
+            $hasuploadedimage = !empty($fs->get_area_files(
+                \context_system::instance()->id,
+                'theme_boost_union',
+                'smartmenus_itemimage',
+                $this->item->id,
+                '',
+                false
+            ));
+            $hasrealimage = !empty($itemimage) || $hasuploadedimage;
+
+            // The icon to show on the card when there is no real image (the configured menu icon, if any).
+            $cardicon = (!empty($this->item->menuicon) && isset($icon)) ? $icon : '';
+
+            // Generate a dynamic placeholder image for empty image cards (used only if there is no icon either).
             if (empty($itemimage)) {
                 $itemimage = $this->get_itemimage($this->item->id);
             }
 
-            // Use the menu title as image alt if image alt text not given.
-            $imagealt = $this->item->imagealt ?: $title;
+            // Use the menu item's plain title as the image alt if no alt text is given. We deliberately use the
+            // raw item title here instead of the (possibly icon-decorated) $title, because $title can contain icon
+            // markup which would otherwise end up - and break - inside the <img> tag's alt attribute.
+            $imagealt = $this->item->imagealt ?: $this->item->title;
             // Update the image alt text if it contains placeholders.
             if (strpos($imagealt, '{') !== false) {
-                $placeholders = ['menutitle' => $title];
+                $placeholders = ['menutitle' => $this->item->title];
                 foreach ($placeholders as $placeholder => $value) {
                     $imagealt = str_replace('{' . $placeholder . '}', $value, $imagealt);
                 }
@@ -1852,6 +1871,8 @@ class smartmenu_item {
             'tooltip' => $tooltip ? format_string($tooltip) : '',
             'haschildren' => $haschildren,
             'itemimage' => $itemimage,
+            'hasrealimage' => !empty($hasrealimage),
+            'cardicon' => $cardicon ?? '',
             'itemtype' => 'link',
             'link' => 1,
             'sort' => uniqid(), // Support third level menu.

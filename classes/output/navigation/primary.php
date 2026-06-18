@@ -194,6 +194,14 @@ class primary extends \core\navigation\output\primary {
                 true
             );
 
+        // The main-location mobile navigation (primary nav + main smart menus only). In contrast to
+        // $mobileprimarynav - which switches to the bottom bar menu when one exists - this always represents the
+        // main navigation. It is used by the sidebar and mega menu navigation layouts so that they show the main
+        // navigation and never duplicate the bottom bar menu.
+        $mainmobileprimarynav = (!empty($locationbottommenu))
+            ? $this->merge_primary_and_custom($this->get_primary_nav(), $locationmainmenucustommerged, true)
+            : $mobileprimarynav;
+
         if (!empty($mobileprimarynav)) {
             // Merge the bottom menu with main menu if there is any bottom menu available. otherwise use the main menu.
             // And convert the children menu items into submenus.
@@ -228,6 +236,7 @@ class primary extends \core\navigation\output\primary {
 
         return [
             'mobileprimarynav' => $mobileprimarynav,
+            'mainmobileprimarynav' => $mainmobileprimarynav,
             'moremenu' => $moremenu->export_for_template($output),
             'menubar' => $menubartemplatedata ?? false,
             'lang' => !isloggedin() || isguestuser() ? $languagemenu->export_for_template($output) : [],

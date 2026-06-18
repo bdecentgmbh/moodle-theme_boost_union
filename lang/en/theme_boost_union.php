@@ -932,6 +932,73 @@ $string['configtitlefeel'] = 'Feel';
 
 // Settings: Navigation tab.
 $string['navigationtab'] = 'Navigation';
+// ... Section: Navigation layout.
+$string['navigationlayoutheading'] = 'Navigation layout';
+// ... ... Setting: Navigation layout.
+$string['navigationlayoutsetting'] = 'Navigation layout';
+$string['navigationlayoutsetting_desc'] = 'With this setting, you can choose how the main navigation is presented throughout the site.<br /><br />
+<b>Default (Top navbar):</b> The standard Boost Union navigation bar at the top of the page.<br />
+<b>Left sidebar:</b> A vertical navigation sidebar on the left, with the user menu and notifications pinned to the bottom. It can be collapsed to an icon-only rail. This is the recommended layout for sites which want a modern, usability-focused navigation.<br />
+<b>Mega menu:</b> The navigation is hidden behind a single trigger in the corner of the screen and opens as a fullscreen overlay. This layout reduces interface clutter so that users can focus on the content and is best suited for sites which want a distinctive, content-focused appearance.';
+$string['navigationlayoutdefault'] = 'Default (Top navbar)';
+$string['navigationlayoutsidebar'] = 'Left sidebar';
+$string['navigationlayoutmegamenu'] = 'Mega menu';
+// ... ... Setting: Navigation sidebar default state.
+$string['navigationsidebardefaultstatesetting'] = 'Sidebar default state';
+$string['navigationsidebardefaultstatesetting_desc'] = 'With this setting, you can choose whether the left sidebar is shown expanded (with labels) or collapsed (icon-only rail) by default. Users can still toggle the sidebar themselves; their choice is remembered on their device.';
+$string['navigationsidebarstateexpanded'] = 'Expanded';
+$string['navigationsidebarstatecollapsed'] = 'Collapsed (icon rail)';
+$string['navigationsidebartoggle'] = 'Toggle sidebar';
+$string['navigationsidebarmenu'] = 'Menu';
+// ... ... Setting: Navigation sidebar logo visibility.
+$string['navigationsidebarlogosetting'] = 'Sidebar logo';
+$string['navigationsidebarlogosetting_desc'] = 'With this setting, you can choose on which devices the logo (or site name) is displayed at the top of the sidebar.';
+$string['navigationsidebarlogoboth'] = 'Show on desktop and mobile';
+$string['navigationsidebarlogodesktop'] = 'Show on desktop only';
+$string['navigationsidebarlogomobile'] = 'Show on mobile only';
+$string['navigationsidebarlogonone'] = 'Do not show';
+// ... ... Setting: Navigation logo type.
+$string['navigationlogotypesetting'] = 'Navigation logo';
+$string['navigationlogotypesetting_desc'] = 'With this setting, you can choose which logo is shown in the left sidebar and the mega menu. The compact logo is best suited for the narrow sidebar, while the full logo can look better in the mega menu. If the chosen logo is not configured, the site name is shown instead.';
+$string['navigationlogotypecompact'] = 'Compact logo';
+$string['navigationlogotypefull'] = 'Logo';
+// ... ... Setting: Mega menu background color.
+$string['navigationmegamenubackgroundsetting'] = 'Mega menu background color';
+$string['navigationmegamenubackgroundsetting_desc'] = 'With this setting, you can set the background color of the mega menu overlay. If left empty, the brand color (or a dark default) is used. The text and card colors adapt automatically to keep a readable contrast.';
+// ... ... Setting: Secondary navigation position.
+$string['secondarynavigationpositionsetting'] = 'Secondary navigation position';
+$string['secondarynavigationpositionsetting_desc'] = 'With this setting, you can choose where the secondary navigation (the in-page tabs such as Course, Settings, Participants, Grades, …) is positioned.<br /><br />
+<b>Default:</b> The unchanged Boost position, within the page content.<br />
+<b>Directly below the navbar:</b> The secondary navigation is shown as a slim, light-grey bar directly below the top navbar, so the primary and secondary navigation are closer together. This option only applies to the default (top navbar) navigation layout.<br />
+<b>Action menu:</b> The secondary navigation is hidden behind a three-dot icon and only shown after clicking it. This is the least cluttered option.';
+$string['secondarynavigationpositiondefault'] = 'Default';
+$string['secondarynavigationpositionbelownavbar'] = 'Directly below the navbar';
+$string['secondarynavigationpositionactionmenu'] = 'Action menu (behind a three-dot icon)';
+$string['secondarynavigationmenu'] = 'Secondary navigation';
+// ... ... Setting: Bottom bar display.
+$string['bottombardisplaysetting'] = 'Bottom bar display';
+$string['bottombardisplaysetting_desc'] = 'With this setting, you can choose on which devices the bottom bar (a smart menu configured for the \'Bottom\' location) is shown.<br /><br />
+<b>Only on mobile:</b> The bottom bar is shown only on mobile viewports, as a full-width bar at the bottom of the screen (the default, unchanged behaviour).<br />
+<b>On all viewports:</b> The bottom bar is additionally shown on tablet and desktop viewports, where it appears as a centered, floating dock (a simpler version of the macOS dock).<br /><br />
+Please note: This setting only has an effect if you have configured a smart menu for the \'Bottom\' location.';
+$string['bottombardisplaymobile'] = 'Only on mobile';
+$string['bottombardisplayall'] = 'On all viewports (floating dock on desktop)';
+// ... ... Setting: Expand the collapsed sidebar on hover.
+$string['navigationsidebarexpandonhoversetting'] = 'Expand on hover';
+$string['navigationsidebarexpandonhoversetting_desc'] = 'With this setting enabled, the collapsed (icon-rail) sidebar temporarily expands to show the labels while the mouse hovers over it. Regardless of this setting, the submenu of a navigation item with children is always shown as a flyout when hovering its icon in the collapsed sidebar.';
+// ... ... Setting: Navigation sidebar width.
+$string['navigationsidebarwidthsetting'] = 'Sidebar width';
+$string['navigationsidebarwidthsetting_desc'] = 'With this setting, you can set the width of the left sidebar in its expanded state. Please enter the width as a valid CSS value (for example 264px).';
+// ... ... Setting: Mega menu trigger visibility.
+$string['navigationmegamenutriggersetting'] = 'Mega menu trigger';
+$string['navigationmegamenutriggersetting_desc'] = 'With this setting, you can choose how visible the mega menu trigger is.<br /><br />
+<b>Combo (visible trigger):</b> A labelled trigger button (plus a live notifications icon) stays visible at all times. This is recommended, as fully hidden navigation is known to be harder for users to discover.<br />
+<b>Fully hidden:</b> Only a discreet icon is shown in the corner. This maximises content focus but makes the navigation less discoverable.';
+$string['navigationmegamenutriggercombo'] = 'Combo (visible trigger)';
+$string['navigationmegamenutriggerhidden'] = 'Fully hidden';
+// ... ... Setting: Show the default navbar while editing.
+$string['navigationmegamenushowwheneditingsetting'] = 'Show navbar while editing';
+$string['navigationmegamenushowwheneditingsetting_desc'] = 'With this setting enabled, the regular top navbar is shown (instead of the mega menu trigger) whenever edit mode is turned on. This makes editing the page more convenient while still keeping the clutter-free mega menu for regular use.';
 // ... Section: Primary navigation.
 $string['primarynavigationheading'] = 'Primary navigation';
 // ... ... Settings: Hide nodes in primary navigation.
@@ -1014,8 +1081,13 @@ $string['region-header'] = 'Header';
 $string['region-offcanvas-left'] = 'Off-canvas (left)';
 $string['region-offcanvas-right'] = 'Off-canvas (right)';
 $string['region-offcanvas-center'] = 'Off-canvas (center)';
+$string['region-megamenu'] = 'Mega menu';
 $string['closeoffcanvas'] = 'Close Off-canvas drawer';
 $string['openoffcanvas'] = 'Open Off-canvas drawer';
+// ... Section: Mega menu navigation layout.
+$string['megamenuopen'] = 'Open menu';
+$string['megamenuclose'] = 'Close menu';
+$string['megamenuheading'] = 'Menu';
 // ... ... Setting: Block regions for 'x' layout.
 $string['blockregionsforlayout'] = 'Additional block regions for \'{$a}\' layout';
 $string['blockregionsforlayout_desc'] = 'With this setting, you can enable additional block regions for the \'{$a}\' layout.';
@@ -1584,6 +1656,13 @@ $string['coursemanagementheading'] = 'Course management';
 // ... ... Setting: Show view course icon in course management.
 $string['showviewcourseiconincoursemgntsetting'] = 'Show view course icon';
 $string['showviewcourseiconincoursemgntsesetting_desc'] = 'By default, on the <a href="{$a}">course management page</a>, Moodle requires you to either open the course details or to pass through the course settings before you can click an additional UI element to view the course. By enabling this setting, you can add a \'View course\' icon directly to the category listing on the course management page.';
+// ... ... Section: Editing.
+$string['editingheading'] = 'Editing';
+// ... ... ... Setting: Focused editing mode.
+$string['editingfocusmodesetting'] = 'Focused editing mode';
+$string['editingfocusmodesetting_desc'] = 'With this setting enabled, turning edit mode on starts in a focused state: the empty block regions and all \'Add block\' buttons are hidden, so that you can concentrate on editing the existing blocks and the course content without the clutter of the many block regions. A toggle button next to the \'Edit mode\' switch lets you reveal the block regions and \'Add block\' buttons whenever you do want to add a block; your choice is remembered on your device.';
+$string['editingfocustoggle'] = 'Block regions';
+$string['editingfocustoggle_desc'] = 'Show the empty block regions and the \'Add block\' buttons';
 
 // Settings: Declaration tab.
 $string['accessibilitydeclarationtab'] = 'Declaration';
@@ -2152,6 +2231,8 @@ $string['boost_union:viewregionoffcanvasright'] = 'To be able to see the Off-can
 $string['boost_union:editregionoffcanvasright'] = 'To be able to edit the Off-canvas (right) block region';
 $string['boost_union:viewregionoffcanvascenter'] = 'To be able to see the Off-canvas (center) block region';
 $string['boost_union:editregionoffcanvascenter'] = 'To be able to edit the Off-canvas (center) block region';
+$string['boost_union:viewregionmegamenu'] = 'To be able to see the Mega menu block region';
+$string['boost_union:editregionmegamenu'] = 'To be able to edit the Mega menu block region';
 $string['boost_union:overridecourseheaderincourse'] = 'To be able to override the course header settings in a course';
 $string['boost_union:transfercourseheaderduringimport'] = 'Transfer course header settings during course import';
 
