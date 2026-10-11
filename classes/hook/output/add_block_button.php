@@ -30,13 +30,25 @@ namespace theme_boost_union\hook\output;
  * Dispatched only when Moodle core shows the button, that is in editing mode for users who may edit
  * blocks. As long as no plugin calls set_html(), the button stays exactly as Moodle core renders it.
  *
+ * The first plugin that calls set_html() owns the button, and later callbacks aren't called. Callbacks
+ * run by priority, highest first. If several plugins replace the button, site admins choose which one
+ * does by changing priorities in config.php, or disable one, for example:
+ *
+ *     $CFG->hooks_callback_overrides = [
+ *         \theme_boost_union\hook\output\add_block_button::class => [
+ *             'block_dash\local\addblock\hook_callbacks::add_block_button' => ['priority' => 500],
+ *         ],
+ *     ];
+ *
  * @package    theme_boost_union
  * @copyright  2026 bdecent gmbh <https://bdecent.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 #[\core\attribute\label('Allows plugins to replace the "Add a block" button of a block region.')]
 #[\core\attribute\tags('theme_boost_union', 'output')]
-final class add_block_button {
+final class add_block_button implements \Psr\EventDispatcher\StoppableEventInterface {
+    use \core\hook\stoppable_trait;
+
     /**
      * Constructor.
      *
@@ -64,11 +76,12 @@ final class add_block_button {
     }
 
     /**
-     * Replace the button's HTML.
+     * Replace the button's HTML, and keep later callbacks from replacing it again.
      *
      * @param string $html
      */
     public function set_html(string $html): void {
         $this->html = $html;
+        $this->stop_propagation();
     }
 }

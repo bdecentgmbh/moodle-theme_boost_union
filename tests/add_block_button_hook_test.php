@@ -89,6 +89,17 @@ final class add_block_button_hook_test extends \advanced_testcase {
     }
 
     /**
+     * The first plugin that replaces the button owns it, so later callbacks aren't called.
+     */
+    public function test_replacing_stops_propagation(): void {
+        $hook = new add_block_button(new \moodle_page(), 'side-pre', '<a>core</a>');
+        $this->assertFalse($hook->isPropagationStopped());
+
+        $hook->set_html('<a>plugin</a>');
+        $this->assertTrue($hook->isPropagationStopped());
+    }
+
+    /**
      * Without the button, as outside editing mode, the hook is not dispatched.
      */
     public function test_no_dispatch_without_button(): void {
