@@ -6,6 +6,7 @@ Changes
 
 ### Unreleased
 
+* 2026-10-11 - Feature: Add the add_block_button hook, which lets plugins replace the "Add a block" button of a block region
 * 2026-10-10 - Bugfix: Validate the block region width settings for the 'Outside (left)' and 'Outside (right)' regions as invalid values would break the SCSS compilation, resolves #1433
 * 2026-10-10 - Bugfix: Anchor the regular expressions which validate the width settings properly as they accepted values like '10%)' which would break the SCSS compilation, resolves #1433
 
