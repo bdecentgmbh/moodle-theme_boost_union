@@ -838,6 +838,26 @@ class core_renderer extends core_renderer_intermediate {
     }
 
     /**
+     * Returns the "Add a block" button of a block region.
+     *
+     * This renderer function hands Moodle core's button to the add_block_button hook, so that plugins can
+     * replace it. Without any hook callback, the button is exactly Moodle core's.
+     *
+     * @param string $region The block region, or '' for the page's default region.
+     * @return string
+     */
+    public function addblockbutton($region = ''): string {
+        $html = parent::addblockbutton($region);
+        if ($html === '') {
+            return $html;
+        }
+
+        $hook = new \theme_boost_union\hook\output\add_block_button($this->page, (string) $region, $html);
+        di::get(hook_manager::class)->dispatch($hook);
+        return $hook->get_html();
+    }
+
+    /**
      * Prints a nice side block with an optional header.
      *
      * This renderer function is copied and modified from /lib/classes/output/core_renderer.php
